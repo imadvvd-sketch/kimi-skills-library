@@ -22,6 +22,17 @@ skill-name/
 
 ## المهارات المتاحة 📚
 
+### مهارات SEO والتسويق الرقمي 🚀
+
+| المهارة | الوصف |
+|---------|-------|
+| [`seo-master`](skills/seo-master/) | SEO شامل - بحث كلمات مفتاحية، On-Page، Technical، Off-Page، Local SEO |
+| [`content-marketing-strategist`](skills/content-marketing-strategist/) | استراتيجية تسويق المحتوى - خطة محتوى، تقويم، Content Pillars |
+| [`paid-ads-specialist`](skills/paid-ads-specialist/) | إعلانات مدفوعة - Google Ads، Meta Ads، LinkedIn، TikTok |
+| [`conversion-optimizer`](skills/conversion-optimizer/) | تحسين معدلات التحويل - Landing Pages، A/B Testing، Sales Funnels |
+| [`email-marketing-pro`](skills/email-marketing-pro/) | التسويق البريدي - Campaigns، Automation، Newsletters |
+| [`analytics-reporter`](skills/analytics-reporter/) | تحليل بيانات التسويق - GA4، Search Console، Dashboards |
+
 ### المهارات الأساسية
 
 | المهارة | الوصف |
@@ -30,7 +41,6 @@ skill-name/
 | [`arabic-email-pro`](skills/arabic-email-pro/) | صياغة الإيميلات المهنية بالعربية والإنجليزية |
 | [`data-analyzer`](skills/data-analyzer/) | تحليل البيانات وإنشاء الرسوم البيانية والتقارير |
 | [`presentation-maker`](skills/presentation-maker/) | إنشاء عروض تقديمية احترافية (PPTX) |
-| [`web-app-builder`](skills/web-app-builder/) | بناء تطبيقات ويب تفاعلية |
 
 ### المهارات المتخصصة
 
