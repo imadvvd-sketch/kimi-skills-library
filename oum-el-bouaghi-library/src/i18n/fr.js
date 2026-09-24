@@ -49,7 +49,7 @@ export default {
   },
   services: {
     title: 'Nos services',
-    subtitle: 'Chaque livre de l’étagère ouvre sur un service. Survolez-les ou utilisez le clavier pour les découvrir.',
+    subtitle: 'Chaque livre de l’étagère ouvre sur un service. Survolez-le, touchez-le ou utilisez le clavier pour le découvrir.',
   },
   events: {
     title: 'Agenda culturel',

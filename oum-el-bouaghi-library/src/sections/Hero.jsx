@@ -1,4 +1,5 @@
-import { m as motion } from 'framer-motion'
+import { useRef } from 'react'
+import { m as motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { useLang } from '../i18n/LanguageContext.jsx'
 import { siteInfo } from '../data/siteInfo.js'
 import Icon from '../components/Icon.jsx'
@@ -13,11 +14,17 @@ const fadeUp = (delay) => ({
 
 export default function Hero() {
   const { t, pick } = useLang()
+  const ref = useRef()
+  const reduce = useReducedMotion()
+  // النص يصعد ويتلاشى ببطء أثناء النزول (parallax)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const textY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -90])
+  const textOpacity = useTransform(scrollYProgress, [0, 0.8], [1, reduce ? 1 : 0.2])
   return (
-    <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[100svh] items-center overflow-hidden pt-24 pb-16">
+    <section ref={ref} id="home" aria-labelledby="hero-title" className="relative flex min-h-[100svh] items-center overflow-hidden pt-24 pb-16">
       <AmazighPattern className="opacity-[0.045]" />
       <div className="container-page relative grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
-        <div className="relative z-10">
+        <motion.div className="relative z-10" style={{ y: textY, opacity: textOpacity }}>
           <motion.p {...fadeUp(0.1)} className="mb-4 inline-flex items-center gap-2 rounded-full bg-olive/10 px-4 py-1.5 font-bold text-olive-dark">
             <span aria-hidden="true" className="size-2 rotate-45 bg-olive" />
             {t.hero.kicker}
@@ -38,7 +45,7 @@ export default function Hero() {
               {t.hero.ctaServices}
             </a>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* المشهد ثلاثي الأبعاد (مع رسم ثابت بديل) */}
         <motion.div

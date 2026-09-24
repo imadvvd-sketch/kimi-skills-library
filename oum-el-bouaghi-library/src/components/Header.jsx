@@ -6,6 +6,7 @@ import { branches } from '../data/branches.js'
 import { navItems } from './navItems.js'
 import Logo from './Logo.jsx'
 import Icon from './Icon.jsx'
+import ScrollProgress from './ScrollProgress.jsx'
 
 export default function Header() {
   const { t, lang, pick, otherHref, otherLang } = useLang()
@@ -45,6 +46,7 @@ export default function Header() {
         scrolled || open ? 'bg-paper/90 shadow-[0_6px_20px_-12px_rgb(46_33_22/0.35)] backdrop-blur-md' : 'bg-transparent'
       }`}
     >
+      <ScrollProgress />
       <div className="container-page flex h-18 items-center justify-between gap-4">
         <a href="#home" className="flex min-w-0 items-center gap-3" aria-label={pick(siteInfo.name)}>
           <Logo className="size-11 shrink-0" />

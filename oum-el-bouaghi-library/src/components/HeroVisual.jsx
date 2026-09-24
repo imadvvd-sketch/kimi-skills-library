@@ -1,25 +1,12 @@
-import { Component, lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLang } from '../i18n/LanguageContext.jsx'
 import useDeviceTier from '../hooks/useDeviceTier.js'
 import HeroIllustration from './HeroIllustration.jsx'
 import SceneLoader from '../three/SceneLoader.jsx'
+import SceneBoundary from './SceneBoundary.jsx'
 
 // المشهد ثلاثي الأبعاد في ملف منفصل يُحمَّل لاحقاً (three.js لا يُثقل التحميل الأول)
 const HeroScene = lazy(() => import('../three/HeroScene.jsx'))
-
-/** إن فشل WebGL لأي سبب نعود إلى الرسم الثابت بصمت */
-class SceneBoundary extends Component {
-  state = { failed: false }
-  static getDerivedStateFromError() {
-    return { failed: true }
-  }
-  componentDidCatch() {
-    this.props.onFail()
-  }
-  render() {
-    return this.state.failed ? null : this.props.children
-  }
-}
 
 const whenIdle = (cb) =>
   'requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 1500 }) : setTimeout(cb, 600)
