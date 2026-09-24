@@ -9,7 +9,7 @@ import Icon from './Icon.jsx'
 import ScrollProgress from './ScrollProgress.jsx'
 
 export default function Header() {
-  const { t, lang, pick, otherHref, otherLang } = useLang()
+  const { t, lang, pick, otherHref, otherLang, switchInPlace } = useLang()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const menuButton = useRef(null)
@@ -36,6 +36,11 @@ export default function Header() {
   }, [open])
 
   const switchLang = (e) => {
+    if (switchInPlace) {
+      e.preventDefault()
+      switchInPlace()
+      return
+    }
     // نحافظ على القسم الحالي عند تبديل اللغة
     e.currentTarget.href = otherHref + window.location.hash
   }

@@ -114,6 +114,7 @@ export default {
     under: 'Sous la tutelle du',
     rights: 'Tous droits réservés',
   },
+  preview: 'Version de prévisualisation — ce n’est pas le site officiel de la bibliothèque. Les données entre [ ] sont provisoires.',
   loader: {
     label: 'Chargement de la scène…',
   },

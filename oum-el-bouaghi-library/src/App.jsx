@@ -30,6 +30,15 @@ export default function App() {
         <Info />
       </main>
       <Footer />
+      {import.meta.env.VITE_SINGLE_PAGE === '1' && (
+        <p
+          role="note"
+          className="fixed inset-x-0 bottom-0 z-[60] bg-ink/95 px-4 pt-2 text-center text-sm text-paper"
+          style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}
+        >
+          {t.preview}
+        </p>
+      )}
     </>
   )
 }
