@@ -1,0 +1,11 @@
+# إعدادات النشر على Netlify
+# الموقع داخل مجلد فرعي من المستودع، لذا اضبط في Netlify:
+#   Base directory = oum-el-bouaghi-library
+# ترويسات الأمان والتخزين المؤقت موجودة في public/_headers
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
