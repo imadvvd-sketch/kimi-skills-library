@@ -17,7 +17,7 @@ const letters = [
 
 export default function HeroIllustration({ label }) {
   return (
-    <svg viewBox="0 0 480 400" role="img" aria-label={label} className="h-full w-full">
+    <svg viewBox="0 0 480 400" className="h-full w-full" {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}>
       <defs>
         <radialGradient id="hero-glow" cx="50%" cy="55%" r="55%">
           <stop offset="0%" stopColor="#F3D38B" stopOpacity="0.85" />

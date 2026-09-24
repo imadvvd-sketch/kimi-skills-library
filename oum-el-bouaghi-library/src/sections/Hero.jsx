@@ -2,7 +2,7 @@ import { m as motion } from 'framer-motion'
 import { useLang } from '../i18n/LanguageContext.jsx'
 import { siteInfo } from '../data/siteInfo.js'
 import Icon from '../components/Icon.jsx'
-import HeroIllustration from '../components/HeroIllustration.jsx'
+import HeroVisual from '../components/HeroVisual.jsx'
 import { AmazighPattern } from '../components/AmazighBand.jsx'
 
 const fadeUp = (delay) => ({
@@ -40,14 +40,14 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* مكان المشهد ثلاثي الأبعاد (المرحلة 2) — حالياً رسم ثابت */}
+        {/* المشهد ثلاثي الأبعاد (مع رسم ثابت بديل) */}
         <motion.div
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.2 }}
-          className="relative mx-auto aspect-[6/5] w-full max-w-xl"
+          className="relative w-full"
         >
-          <HeroIllustration label={t.hero.sceneAlt} />
+          <HeroVisual />
         </motion.div>
       </div>
 

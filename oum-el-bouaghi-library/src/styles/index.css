@@ -76,3 +76,20 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* حركة صفحات شاشة التحميل */
+.loader-page {
+  transform-origin: 32px 24px;
+  animation: loader-flip 1.4s ease-in-out infinite;
+}
+@keyframes loader-flip {
+  0% { transform: scaleX(1); }
+  50% { transform: scaleX(0); }
+  100% { transform: scaleX(-1); }
+}
+
+/* تذويب حواف لوحة الرسم ثلاثية الأبعاد في خلفية الصفحة */
+.scene-mask {
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 62%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at center, #000 62%, transparent 100%);
+}
