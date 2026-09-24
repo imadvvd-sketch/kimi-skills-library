@@ -29,8 +29,8 @@ export default function Events() {
                       dateTime={e.date}
                       className="flex w-20 shrink-0 flex-col items-center justify-center rounded-xl bg-olive py-3 text-paper"
                     >
-                      <span className="font-display text-4xl leading-none font-bold">{day.format(date)}</span>
-                      <span className="mt-1 text-sm">{month.format(date)}</span>
+                      <span className="font-display text-4xl leading-none font-bold" suppressHydrationWarning>{day.format(date)}</span>
+                      <span className="mt-1 text-sm" suppressHydrationWarning>{month.format(date)}</span>
                     </time>
                     <div className="min-w-0">
                       <div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
@@ -47,7 +47,7 @@ export default function Events() {
                       <p className="mt-1 text-ink-soft">{pick(e.description)}</p>
                       <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
                         <span className="inline-flex items-center gap-1">
-                          <Icon name="calendar" className="size-4" /> {full.format(date)} — <Ph>{e.time}</Ph>
+                          <Icon name="calendar" className="size-4" /> <span suppressHydrationWarning>{full.format(date)}</span> — <Ph>{e.time}</Ph>
                         </span>
                         <span className="inline-flex items-center gap-1">
                           <Icon name="pin" className="size-4" /> {pick(e.place)}

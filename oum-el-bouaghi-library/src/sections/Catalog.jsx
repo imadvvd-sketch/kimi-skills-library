@@ -6,6 +6,7 @@ import SectionHeading from '../components/SectionHeading.jsx'
 import Icon from '../components/Icon.jsx'
 
 const TYPES = ['all', 'book', 'children', 'periodical', 'digital']
+const PAGE = 8 // عدد النتائج المعروضة في كل دفعة
 const LANGS = ['all', 'ar', 'fr']
 
 export default function Catalog() {
@@ -22,6 +23,10 @@ export default function Catalog() {
     () => searchCatalog({ query: deferredQuery, type, lang: docLang, availableOnly }),
     [deferredQuery, type, docLang, availableOnly],
   )
+  // عند تغيير البحث نعود تلقائياً إلى الدفعة الأولى من النتائج
+  const filterKey = `${deferredQuery}|${type}|${docLang}|${availableOnly}`
+  const [paging, setPaging] = useState({ key: filterKey, limit: PAGE })
+  const limit = paging.key === filterKey ? paging.limit : PAGE
 
   const reset = () => {
     setQuery('')
@@ -101,9 +106,9 @@ export default function Catalog() {
           {results.length === 0 ? (
             <p className="py-10 text-center text-ink-soft">{c.noResults}</p>
           ) : (
-            <ul className="mt-2 max-h-[32rem] divide-y divide-sand/70 overflow-y-auto pe-1">
+            <ul tabIndex={0} aria-label={c.results(results.length)} className="mt-2 max-h-[32rem] divide-y divide-sand/70 overflow-y-auto rounded-lg pe-1">
               <AnimatePresence initial={false}>
-                {results.map((item) => (
+                {results.slice(0, limit).map((item) => (
                   <motion.li
                     key={item.id}
                     initial={{ opacity: 0 }}
@@ -137,6 +142,13 @@ export default function Catalog() {
                 ))}
               </AnimatePresence>
             </ul>
+          )}
+          {results.length > limit && (
+            <div className="mt-4 text-center">
+              <button type="button" onClick={() => setPaging({ key: filterKey, limit: limit + PAGE })} className="btn-ghost py-2">
+                {c.more(results.length - limit)}
+              </button>
+            </div>
           )}
         </div>
       </div>

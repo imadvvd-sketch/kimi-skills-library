@@ -12,16 +12,44 @@ import Ph from '../components/Ph.jsx'
 
 const ShelfScene = lazy(() => import('../three/ShelfScene.jsx'))
 
-export default function Services() {
-  const { t, pick, lang, dir } = useLang()
-  const [tier, setTier] = useDeviceTier()
-  const [active, setActive] = useState(null)
+function ServicesShelf({ tier, onFail, items, active, setActive, select }) {
+  const { t, lang, dir } = useLang()
   const [ready, setReady] = useState(false)
   const shelfRef = useRef()
   // نبدأ تحميل الرف عندما يقترب القسم من الشاشة
   const near = useInView(shelfRef, '400px')
   const [load, setLoad] = useState(false)
   if (near && !load) setLoad(true)
+
+  return (
+    <div ref={shelfRef} className="relative -mx-4 mb-10 h-[260px] sm:mx-0 sm:h-[380px] lg:h-[420px]">
+      {load && (
+        <div className={`h-full transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
+          <SceneBoundary onFail={onFail}>
+            <Suspense fallback={null}>
+              <ShelfScene
+                tier={tier}
+                items={items}
+                lang={lang}
+                dir={dir}
+                active={active}
+                onHover={setActive}
+                onSelect={select}
+                onReady={() => setReady(true)}
+              />
+            </Suspense>
+          </SceneBoundary>
+        </div>
+      )}
+      {!ready && <SceneLoader label={t.loader.label} />}
+    </div>
+  )
+}
+
+export default function Services() {
+  const { t, pick } = useLang()
+  const [tier, setTier] = useDeviceTier()
+  const [active, setActive] = useState(null)
   const cardRefs = useRef({})
 
   const items = useMemo(() => services.map((s) => ({ id: s.id, color: s.color, title: pick(s.title) })), [pick])
@@ -39,27 +67,14 @@ export default function Services() {
         <SectionHeading id="services-title" title={t.services.title} subtitle={use3d ? t.services.subtitle : null} />
 
         {use3d && (
-          <div ref={shelfRef} className="relative -mx-4 mb-10 h-[260px] sm:mx-0 sm:h-[380px] lg:h-[420px]">
-            {load && (
-              <div className={`h-full transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
-                <SceneBoundary onFail={() => setTier('static')}>
-                  <Suspense fallback={null}>
-                    <ShelfScene
-                      tier={tier}
-                      items={items}
-                      lang={lang}
-                      dir={dir}
-                      active={active}
-                      onHover={setActive}
-                      onSelect={select}
-                      onReady={() => setReady(true)}
-                    />
-                  </Suspense>
-                </SceneBoundary>
-              </div>
-            )}
-            {!ready && <SceneLoader label={t.loader.label} />}
-          </div>
+          <ServicesShelf
+            tier={tier}
+            onFail={() => setTier('static')}
+            items={items}
+            active={active}
+            setActive={setActive}
+            select={select}
+          />
         )}
 
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

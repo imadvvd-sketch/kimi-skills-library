@@ -5,6 +5,7 @@ import Book from './Book.jsx'
 import Particles from './Particles.jsx'
 import { createHeroAssets } from './lib/textures.js'
 import useInView from '../hooks/useInView.js'
+import FrameLimiter from './FrameLimiter.jsx'
 
 const TIERS = {
   full: { dpr: [1, 1.75], sparks: 380, glyphs: 26, antialias: true },
@@ -107,12 +108,13 @@ export default function HeroScene({ tier = 'full', onReady }) {
       {assets && (
         <Canvas
           flat
-          frameloop={inView ? 'always' : 'never'}
+          frameloop={!inView ? 'never' : tier === 'lite' ? 'demand' : 'always'}
           dpr={settings.dpr}
           gl={{ antialias: settings.antialias, alpha: true, powerPreference: 'high-performance' }}
           camera={{ fov: 32, position: BASE_CAM.toArray(), near: 0.1, far: 50 }}
           style={{ pointerEvents: 'none' }}
         >
+          {tier === 'lite' && inView && <FrameLimiter fps={30} />}
           <ambientLight intensity={0.9} color="#FFF4E0" />
           <hemisphereLight args={['#FFF7EA', '#8C6A4A', 0.6]} />
           <directionalLight position={[3, 6, 4]} intensity={1.6} color="#FFF1D6" />

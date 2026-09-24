@@ -4,6 +4,7 @@ import { Color, MeshStandardMaterial, RepeatWrapping, Vector3 } from 'three'
 import { createShelfAssets } from './lib/shelfTextures.js'
 import { createShadowTexture } from './lib/textures.js'
 import useInView from '../hooks/useInView.js'
+import FrameLimiter from './FrameLimiter.jsx'
 
 /**
  * رف كتب ثلاثي الأبعاد: كل كتاب يمثّل خدمة.
@@ -176,13 +177,14 @@ export default function ShelfScene({ tier = 'full', items, lang, dir, active, on
       {assets && (
         <Canvas
           flat
-          frameloop={inView ? 'always' : 'never'}
+          frameloop={!inView ? 'never' : tier === 'lite' ? 'demand' : 'always'}
           dpr={tier === 'full' ? [1, 1.75] : [1, 1.25]}
           gl={{ antialias: tier === 'full', alpha: true }}
           camera={{ fov: 30, position: [0, 1.9, 7.6], near: 0.1, far: 40 }}
           onPointerMissed={() => onHover(null)}
           aria-hidden="true"
         >
+          {tier === 'lite' && inView && <FrameLimiter fps={30} />}
           <ambientLight intensity={0.85} color="#FFF4E0" />
           <hemisphereLight args={['#FFF7EA', '#7A5230', 0.5]} />
           <directionalLight position={[-3, 5, 5]} intensity={1.7} color="#FFF1D6" />

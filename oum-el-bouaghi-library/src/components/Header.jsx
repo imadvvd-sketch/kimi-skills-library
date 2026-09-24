@@ -48,7 +48,7 @@ export default function Header() {
     >
       <ScrollProgress />
       <div className="container-page flex h-18 items-center justify-between gap-4">
-        <a href="#home" className="flex min-w-0 items-center gap-3" aria-label={pick(siteInfo.name)}>
+        <a href="#home" className="flex min-w-0 items-center gap-3">
           <Logo className="size-11 shrink-0" />
           <span className="min-w-0 leading-tight">
             <span className="block truncate font-display text-lg font-bold text-ink">{pick(siteInfo.shortName)}</span>
@@ -77,7 +77,7 @@ export default function Header() {
             onClick={switchLang}
             hrefLang={otherLang}
             lang={otherLang}
-            aria-label={t.nav.switchLabel}
+            aria-label={`${t.nav.switchTo} — ${t.nav.switchLabel}`}
             className="inline-flex items-center gap-1.5 rounded-full border-2 border-olive/40 px-3 py-1.5 text-sm font-bold text-olive-dark transition hover:border-olive hover:bg-olive hover:text-paper"
           >
             <Icon name="globe" className="size-4" />

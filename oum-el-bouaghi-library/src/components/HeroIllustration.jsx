@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 /**
  * رسم ثابت لكتاب مفتوح — يُستعمل:
  *  1) كبديل للمشهد ثلاثي الأبعاد على الأجهزة الضعيفة أو مع reduced-motion
@@ -16,24 +18,25 @@ const letters = [
 ]
 
 export default function HeroIllustration({ label }) {
+  const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   return (
     <svg viewBox="0 0 480 400" className="h-full w-full" {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}>
       <defs>
-        <radialGradient id="hero-glow" cx="50%" cy="55%" r="55%">
+        <radialGradient id={`hero-glow${id}`} cx="50%" cy="55%" r="55%">
           <stop offset="0%" stopColor="#F3D38B" stopOpacity="0.85" />
           <stop offset="60%" stopColor="#E9C57A" stopOpacity="0.18" />
           <stop offset="100%" stopColor="#E9C57A" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="page-l" x1="0" x2="1">
+        <linearGradient id={`page-l${id}`} x1="0" x2="1">
           <stop offset="0%" stopColor="#E6D5B5" />
           <stop offset="100%" stopColor="#FBF5E8" />
         </linearGradient>
-        <linearGradient id="page-r" x1="1" x2="0">
+        <linearGradient id={`page-r${id}`} x1="1" x2="0">
           <stop offset="0%" stopColor="#E6D5B5" />
           <stop offset="100%" stopColor="#FBF5E8" />
         </linearGradient>
       </defs>
-      <ellipse cx="240" cy="230" rx="230" ry="170" fill="url(#hero-glow)" />
+      <ellipse cx="240" cy="230" rx="230" ry="170" fill={`url(#hero-glow${id})`} />
       {letters.map((l, i) => (
         <text
           key={i}
@@ -43,6 +46,7 @@ export default function HeroIllustration({ label }) {
           fill="#B07A2F"
           opacity={l.o}
           fontFamily="Amiri, 'Noto Sans Tifinagh', serif"
+          fontWeight="700"
           textAnchor="middle"
         >
           {l.c}
@@ -51,8 +55,8 @@ export default function HeroIllustration({ label }) {
       {/* الغلاف */}
       <path d="M48 262 Q240 300 432 262 L440 300 Q240 340 40 300 Z" fill="#6B4527" />
       {/* الصفحات */}
-      <path d="M240 290 Q150 250 60 268 L70 190 Q160 170 240 212 Z" fill="url(#page-l)" stroke="#CBB28A" />
-      <path d="M240 290 Q330 250 420 268 L410 190 Q320 170 240 212 Z" fill="url(#page-r)" stroke="#CBB28A" />
+      <path d="M240 290 Q150 250 60 268 L70 190 Q160 170 240 212 Z" fill={`url(#page-l${id})`} stroke="#CBB28A" />
+      <path d="M240 290 Q330 250 420 268 L410 190 Q320 170 240 212 Z" fill={`url(#page-r${id})`} stroke="#CBB28A" />
       {/* صفحة تنقلب */}
       <path d="M240 212 Q300 150 360 118 L372 196 Q300 214 240 290 Z" fill="#FFFBF2" stroke="#CBB28A" opacity="0.95" />
       {/* أسطر */}

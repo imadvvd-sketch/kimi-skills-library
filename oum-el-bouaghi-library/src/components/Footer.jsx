@@ -53,7 +53,7 @@ export default function Footer() {
       <div className="relative border-t border-paper/15">
         <div className="container-page flex flex-col gap-2 py-5 text-sm text-paper/70 sm:flex-row sm:justify-between">
           <p>
-            © {year} {pick(siteInfo.shortName)} — {t.footer.rights}
+            © <span suppressHydrationWarning>{year}</span> {pick(siteInfo.shortName)} — {t.footer.rights}
           </p>
           <p>
             {t.footer.under} {pick(siteInfo.ministry)}

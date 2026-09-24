@@ -21,16 +21,24 @@ export default function HeroVisual() {
 
   useEffect(() => {
     if (!use3d) return
-    // نبدأ التحميل بعد اكتمال الصفحة ووقت فراغ المتصفح
     let id
+    // الحاسوب: نبدأ التحميل بعد اكتمال الصفحة ووقت فراغ المتصفح
     const start = () => (id = whenIdle(() => setLoad(true)))
-    if (document.readyState === 'complete') start()
+    // الهاتف: ننتظر أول تفاعل (لمس/تمرير) حتى لا نُبطئ التحميل الأول على الشبكات المتوسطة
+    const events = ['pointerdown', 'touchstart', 'scroll', 'keydown', 'wheel']
+    const onInteract = () => {
+      events.forEach((e) => window.removeEventListener(e, onInteract))
+      start()
+    }
+    if (tier === 'lite') events.forEach((e) => window.addEventListener(e, onInteract, { passive: true, once: true }))
+    else if (document.readyState === 'complete') start()
     else window.addEventListener('load', start, { once: true })
     return () => {
       window.removeEventListener('load', start)
+      events.forEach((e) => window.removeEventListener(e, onInteract))
       if (id) cancelIdle(id)
     }
-  }, [use3d])
+  }, [use3d, tier])
 
   return (
     <div role="img" aria-label={t.hero.sceneAlt} className="relative mx-auto aspect-[6/5] w-full max-w-xl">

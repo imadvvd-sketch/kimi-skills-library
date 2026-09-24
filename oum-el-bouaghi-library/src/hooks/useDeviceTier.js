@@ -40,8 +40,10 @@ export function detectTier() {
 }
 
 export default function useDeviceTier() {
-  const [tier, setTier] = useState(detectTier)
+  // نبدأ بـ 'static' (مطابق لـ HTML المولَّد مسبقاً) ثم نحدد المستوى الفعلي في المتصفح
+  const [tier, setTier] = useState('static')
   useEffect(() => {
+    setTier(detectTier())
     // إن غيّر الزائر إعداد تقليل الحركة أثناء التصفح
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
     const onChange = () => setTier(detectTier())

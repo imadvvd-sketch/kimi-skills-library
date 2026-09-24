@@ -1,3 +1,14 @@
+/* خطوط Google (Amiri / Tajawal / Noto Sans Tifinagh) مستضافة محلياً عبر Fontsource:
+   أسرع (بدون طلبات خارجية تعيق العرض) ويعمل بدون اتصال بخوادم Google */
+@import '@fontsource/amiri/arabic-700.css';
+@import '@fontsource/amiri/latin-700.css';
+@import '@fontsource/tajawal/arabic-400.css';
+@import '@fontsource/tajawal/arabic-500.css';
+@import '@fontsource/tajawal/arabic-700.css';
+@import '@fontsource/tajawal/latin-400.css';
+@import '@fontsource/tajawal/latin-500.css';
+@import '@fontsource/tajawal/latin-700.css';
+@import '@fontsource/noto-sans-tifinagh/tifinagh-400.css';
 @import 'tailwindcss';
 
 /* ====== الهوية البصرية: عدّل الألوان والخطوط من هنا ====== */
@@ -93,3 +104,11 @@
   -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, #000 62%, transparent 100%);
   mask-image: radial-gradient(ellipse 50% 50% at center, #000 62%, transparent 100%);
 }
+
+/* حركات دخول القسم الرئيسي (CSS خالص لتظهر قبل تحميل JavaScript) */
+.hero-in { animation: hero-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-rise { animation: hero-rise 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-zoom { animation: hero-zoom 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+@keyframes hero-in { from { opacity: 0; transform: translateY(28px); } }
+@keyframes hero-rise { from { transform: translateY(20px); } }
+@keyframes hero-zoom { from { opacity: 0; transform: scale(0.94); } }

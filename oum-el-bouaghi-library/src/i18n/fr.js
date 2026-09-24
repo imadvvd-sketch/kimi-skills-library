@@ -83,6 +83,7 @@ export default {
     results: (n) => (n === 0 ? 'Aucun résultat' : n === 1 ? '1 résultat' : `${n} résultats`),
     noResults: 'Aucun document trouvé. Essayez d’autres mots ou demandez au bibliothécaire.',
     reset: 'Effacer',
+    more: (n) => `Afficher plus (${n})`,
   },
   branches: {
     title: 'Bibliothèques annexes',
