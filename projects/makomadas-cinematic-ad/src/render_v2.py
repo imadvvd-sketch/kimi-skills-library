@@ -233,12 +233,12 @@ def s5_rows(t):
     img = IMG[6]
     mx, my = 0.494 * img.width, 0.47 * img.height
     e = float(eout((t - 9.78) / 2.6, 2))
-    sw = SW0 / (1.02 + 0.10 * e)
+    sw = SW0 / (1.02 + 0.10 * e) / punch(t, 9.78, 0.08)
     cx = 0.5 * img.width + (mx - 0.5 * img.width) * 0.3 * e
     cy = 0.5 * img.height + (my - 0.5 * img.height) * 0.25 * e
     col = f32(view(img, cx, cy, sw))
     # light pours down from the beam: reveal from the top
-    edge = keys(t, [9.78, 10.95], [-300.0, H + 700.0])
+    edge = keys(t, [9.78, 10.35], [-300.0, H + 700.0])
     rev = clamp((edge - YY) / 650)
     col = col * (0.04 + 0.96 * rev[..., None])
     return col, 1.0
@@ -248,7 +248,7 @@ def s6_hall(t):
     """12.06 - 13.45  استعدوا — down the aisle"""
     img = IMG[5]
     e = float(eio((t - 12.06) / 1.45))
-    sw = SW0 / (1.02 + 0.16 * e)
+    sw = SW0 / (1.02 + 0.16 * e) / punch(t, 12.06, 0.12)
     cy = 0.5 * img.height + (0.47 * img.height - 0.5 * img.height) * e
     col = f32(view(img, 0.5 * img.width, cy, sw))
     # a band of light runs down the aisle toward the stage
@@ -262,7 +262,7 @@ def s7_mic(t):
     """13.45 - 14.23  استعدوا (rising) — rush toward the microphone"""
     img = IMG[7]
     e = float(ein((t - 13.45) / 0.8, 2.2))
-    sw = SW0 / (1.03 + 0.38 * e)
+    sw = SW0 / (1.03 + 0.38 * e) / punch(t, 13.45, 0.14)
     cy = 0.5 * img.height + (0.41 * img.height - 0.5 * img.height) * e
     col = f32(view(img, 0.5 * img.width, cy, sw))
     exp = 1.0 + 0.45 * e + 0.35 * float(sstep(13.45, 13.5, t) * (1 - sstep(13.5, 13.8, t)))
@@ -279,7 +279,7 @@ def s8_title(t):
     img = IMG[8]
     z = 1.0 + 0.05 * float(sstep(14.78, 19.5, t))
     bg = f32(view(img, 0.47 * img.width, 0.5 * img.height, SW0 / 1.02 / z))
-    exp = keys(t, [14.6, 15.4, 16.50, 16.58, 17.6, 19.05], [0.0, 0.45, 0.45, 0.80, 0.55, 0.55])
+    exp = keys(t, [14.6, 15.4, 16.0, 16.52, 16.58, 17.6, 19.05], [0.0, 0.45, 0.45, 0.12, 0.85, 0.55, 0.55])
     # the light on the stone travels left -> right while the title is read
     lx = keys(t, [14.78, 19.4], [-200.0, 700.0])
     sweep = 0.55 + 0.45 * np.exp(-((XX - lx) / 600) ** 2)
@@ -288,9 +288,19 @@ def s8_title(t):
     calm = 1 - 0.55 * np.exp(-((YY - 960) / 380) ** 2)
     bg *= calm[..., None]
     ti = R.scene_titles(t)
+    sl = slam(t)
+    if sl > 1.0005:  # the name lands: snap from slightly larger
+        cx, cy = W / 2, 935.0
+        uu = (XX - cx) / sl + cx
+        vv = (YY - cy) / sl + cy
+        t8 = (clamp(ti / 1.6) * 255).astype(np.uint8)
+        ti = R.sample(t8, uu.ravel(), vv.ravel())[0].reshape(H, W, 3) * 1.6
+    if t < 16.56:  # "الملتقى الوطني" holds its breath
+        ti = ti * (1 - 0.45 * float(sstep(16.1, 16.5, t)))
     alpha = clamp(ti.max(-1) / 0.85)[..., None]
     fade = 1 - float(sstep(19.12, DUR, t)) * 0.97
-    return bg * (1 - alpha) * fade + ti, 0.0
+    flash = float(sstep(16.55, 16.57, t) * (1 - sstep(16.57, 16.75, t)))
+    return bg * (1 - alpha) * fade + ti + (WARM * 0.22 * flash)[None, None], 0.0
 
 
 # --------------------------------------------------------------- edit
@@ -327,6 +337,61 @@ def compose(t):
     return s8_title(t)
 
 
+def punch(t, t0, amt):
+    """zoom snap on a cut: starts amt larger and settles in ~0.3s"""
+    if t < t0:
+        return 1.0
+    return 1 + amt * (1 - float(eout((t - t0) / 0.32, 3)))
+
+
+def slam(t):
+    if t < 16.56:
+        return 1.0
+    return 1 + 0.12 * (1 - float(eout((t - 16.56) / 0.22, 3)))
+
+
+# subliminal glimpses of what is coming, inside the pauses of the voice
+FLASHES = [  # (start, keyframe, frames, focus x, focus y, zoom)
+    (1.62, 7, 3, 0.50, 0.42, 1.35),   # the microphone, before anything is explained
+    (3.80, 5, 2, 0.50, 0.52, 1.10),   # the hall with its arch
+    (7.62, 6, 3, 0.50, 0.70, 1.25),   # the paper rows — the page will become a hall
+    (11.62, 7, 2, 0.50, 0.40, 1.60),  # the grille of the microphone
+]
+IMPACTS = [1.62, 3.80, 7.62, 9.78, 11.62, 12.06, 13.45, 16.56]
+BEATS = [1.95, 5.50, 8.25, 8.85, 9.35, 11.95, 12.95, 13.25]
+
+
+def flash_frame(t):
+    for t0, n, nf, fx, fy, z in FLASHES:
+        if t0 <= t < t0 + nf / FPS:
+            img = IMG[n]
+            k = (t - t0) * FPS  # frame index inside the flash
+            col = f32(view(img, fx * img.width, fy * img.height, SW0 / (z + 0.04 * k)))
+            col = clamp((col - 0.03) * 1.25)
+            if k < 1:
+                col = col + 0.10 * WARM[None, None]
+            return col
+    return None
+
+
+def shake(t):
+    dx = dy = 0.0
+    for t0 in IMPACTS:
+        if 0 <= t - t0 < 0.5:
+            a = 7 * math.exp(-(t - t0) * 9)
+            dx += a * math.sin((t - t0) * 83)
+            dy += a * math.cos((t - t0) * 71)
+    return int(round(dx)), int(round(dy))
+
+
+def pulse(t):
+    p = 0.0
+    for b in BEATS:
+        if 0 <= t - b < 0.4:
+            p += math.exp(-(t - b) * 14) + 0.6 * math.exp(-max(0, t - b - 0.17) * 16) * (t - b > 0.17)
+    return 1 + 0.10 * p
+
+
 def finish(col, fi, dust):
     t = fi / FPS
     col = np.maximum(col, 0)
@@ -347,7 +412,16 @@ def finish(col, fi, dust):
 
 def frame(fi):
     t = fi / FPS
-    col, dust = compose(t)
+    fl = flash_frame(t)
+    if fl is not None:
+        col, dust = fl, 0.0
+    else:
+        col, dust = compose(t)
+        if t < 14.2:
+            col = col * pulse(t)
+    dx, dy = shake(t)
+    if dx or dy:
+        col = np.roll(col, (dy, dx), axis=(0, 1))
     return finish(col.astype(np.float32), fi, dust)
 
 
@@ -358,8 +432,8 @@ def main():
             t = float(a)
             Image.fromarray(frame(int(round(t * FPS)))).save(os.path.join(OUT, "v2_%05.2f.png" % t))
         return
-    mix = os.path.join(OUT, "mix.wav")
-    out = os.path.join(OUT, "makomadas_teaser_v2.mp4")
+    mix = os.path.join(OUT, "mix_v2.wav")  # python3 src/audio.py --tension
+    out = os.path.join(OUT, "makomadas_teaser_v3.mp4")
     ff = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
                            "-s", "%dx%d" % (W, H), "-r", str(FPS), "-i", "-", "-i", mix,
                            "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "slow",

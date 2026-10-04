@@ -161,7 +161,7 @@ def whoosh(dur, rise=True, lo=300, hi=5000):
 
 
 # ------------------------------------------------------------- the bed
-def build():
+def build(tension=False):
     L = np.zeros(N)  # mono elements, spatialised by the reverb
     dry_st = np.zeros((N, 2))
 
@@ -224,6 +224,9 @@ def build():
     for t0 in (17.62, 17.69, 17.77):
         place(L, tick(2300 + 300 * (t0 > 17.7), 70), t0, db(-34))
 
+    if tension:
+        add_tension(L)
+
     # ducking under the voice (bed only): -5 dB while words are spoken
     duck = np.ones(N)
     for a, b in PHRASES:
@@ -240,9 +243,50 @@ def build():
 DUR = N / SR
 
 
+def heartbeat(gain=1.0):
+    n = int(0.6 * SR)
+    t = np.arange(n) / SR
+    beat = lambda d: np.sin(2 * np.pi * (48 + 30 * np.exp(-t * 30)) * t) * np.exp(-t * d)
+    s = beat(14) + 0.7 * np.roll(beat(18), int(0.17 * SR)) * (t > 0.17)
+    return lp(s, 140) * gain
+
+
+def flash_hit():
+    n = int(1.2 * SR)
+    t = np.arange(n) / SR
+    sub = np.sin(2 * np.pi * (70 * np.exp(-t * 6) + 34) * t) * np.exp(-t * 4)
+    crack = bp(rng.standard_normal(n), 900, 7000) * np.exp(-t * 55) * 0.6
+    return sub + crack
+
+
+def add_tension(L):
+    """v2 edit: flash frames, accelerating heartbeat, risers, a pull into the name"""
+    for t0 in (1.62, 3.80, 7.62, 11.62):  # flash frames (see render_v2.FLASHES)
+        place(L, flash_hit(), t0, db(-17))
+    for t0, g in ((1.95, -22), (5.50, -24), (8.25, -21), (8.85, -20), (9.35, -19),
+                  (11.95, -18), (12.95, -17), (13.25, -16)):
+        place(L, heartbeat(), t0, db(g))
+    # long riser from the first "استعدوا" to the cut to black
+    n = int((14.235 - 11.4) * SR)
+    tt = np.arange(n) / SR
+    p = tt / tt[-1]
+    riser = whoosh(n / SR, True, 150, 9000) * p ** 1.5
+    riser += np.sin(2 * np.pi * np.cumsum(220 + 660 * p ** 2) / SR) * 0.08 * p ** 3
+    place(L, riser, 11.4, db(-24))
+    # reverse swell: the breath before the name
+    n = int((16.56 - 15.75) * SR)
+    sw = hp(rng.standard_normal(n), 2500) * np.linspace(0, 1, n) ** 3
+    sw += np.sin(2 * np.pi * 73.4 * np.arange(n) / SR) * np.linspace(0, 1, n) ** 2 * 0.5
+    place(L, sw, 15.75, db(-24))
+    # name slam
+    place(L, flash_hit(), 16.55, db(-15))
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
-    bed = build()
+    import sys
+    tension = "--tension" in sys.argv
+    bed = build(tension)
     vo = np.stack([VO, VO], -1)
     # make room: if the sum would exceed -1 dBFS, pull the BED down locally (never the VO)
     mix = vo + bed
@@ -262,7 +306,8 @@ def main():
     print("peak mix %.2f dBFS, VO peak %.2f dBFS, bed rms %.1f dBFS" % (
         20 * np.log10(np.abs(mix).max()), 20 * np.log10(np.abs(VO).max()), 20 * np.log10(np.sqrt((bed ** 2).mean()))))
     import wave
-    for name, data in (("bed.wav", bed), ("mix.wav", mix)):
+    suffix = "_v2" if tension else ""
+    for name, data in (("bed%s.wav" % suffix, bed), ("mix%s.wav" % suffix, mix)):
         pcm = (np.clip(data, -1, 1) * 32767).astype("<i2")
         with wave.open(os.path.join(OUT, name), "wb") as w:
             w.setnchannels(2)
