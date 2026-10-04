@@ -1,0 +1,6 @@
+output/*
+!output/makomadas_teaser_1080x1920.mp4
+!output/storyboard.jpg
+!output/makomadas_teaser_v2.mp4
+!output/makomadas_teaser_v3.mp4
+__pycache__/
