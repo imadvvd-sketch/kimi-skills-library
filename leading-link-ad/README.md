@@ -22,8 +22,8 @@ npm run stills           # mid-scene stills of both versions -> stills/
 npm run typecheck
 ```
 
-Captions are on by default. To turn them off, set the `showCaptions` prop in
-the Studio, or render with `--props='{"showCaptions":false}'`.
+Captions are off by default. To burn them in, set the `showCaptions` prop in
+the Studio, or render with `--props='{"showCaptions":true}'`.
 
 ## Project layout
 

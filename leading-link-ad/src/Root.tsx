@@ -13,7 +13,7 @@ export const RemotionRoot: React.FC = () => (
       fps={FPS}
       width={WIDTH}
       height={HEIGHT}
-      defaultProps={{ showCaptions: true }}
+      defaultProps={{ showCaptions: false }}
     />
     {/* Same scenes, responsive layout (see src/layout.ts) */}
     <Composition
@@ -24,7 +24,7 @@ export const RemotionRoot: React.FC = () => (
       fps={FPS}
       width={HEIGHT}
       height={WIDTH}
-      defaultProps={{ showCaptions: true }}
+      defaultProps={{ showCaptions: false }}
     />
   </>
 );
