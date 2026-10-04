@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { palette } from "../theme";
+import { BrandSwirl } from "./BrandLogo";
 
 // Tiny tiling noise texture for film grain (generated SVG, no external image).
 const GRAIN = `url("data:image/svg+xml;utf8,${encodeURIComponent(
@@ -43,6 +44,19 @@ export const Background: React.FC<{ seed?: number; intensity?: number }> = ({
             "radial-gradient(ellipse 70% 65% at 50% 50%, black 30%, transparent 85%)",
         }}
       />
+      {/* the logo swirl as a huge, slowly turning motif */}
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
+        <BrandSwirl
+          size={1500}
+          rotate={frame * 0.6 + seed * 47}
+          opacity={0.055 * intensity}
+          style={{
+            position: "absolute",
+            left: `${[62, -18, 70, -10, 55, -22, 64, 20, -15, 30][seed % 10]}%`,
+            top: `${[-30, 20, 30, -35, 35, -10, -40, 40, 25, -20][seed % 10]}%`,
+          }}
+        />
+      </AbsoluteFill>
       <AbsoluteFill
         style={{
           backgroundImage: GRAIN,

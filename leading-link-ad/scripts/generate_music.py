@@ -95,25 +95,39 @@ def music():
         pan = 0.5 + 0.35 * np.sin(i * 0.7)
         out[s0:s0 + m, 0] += pl * (1 - pan)
         out[s0:s0 + m, 1] += pl * pan
-    # soft kick on beats 1 and 3, hats on off-beats
+    # drums: four-on-the-floor kick after the hook, claps on 2 and 4, hats
+    pump = np.ones(n)
     for i in range(int(LENGTH / BEAT)):
         st = i * BEAT
         s0 = int(st * SR)
-        if st >= 2.5 and i % 2 == 0:
-            m = int(0.3 * SR)
+        if st >= 3.6:
+            m = int(0.35 * SR)
             if s0 + m < n:
                 tt = np.arange(m) / SR
-                f = 45 + 90 * np.exp(-tt * 30)
-                kick = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 12) * 0.32
+                f = 42 + 120 * np.exp(-tt * 28)
+                kick = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 9) * 0.5
+                kick += rng.standard_normal(m) * np.exp(-tt * 300) * 0.08  # click
                 out[s0:s0 + m] += kick[:, None]
-        hs = int((st + BEAT / 2) * SR)
-        if st >= 5.0:
-            m = int(0.05 * SR)
-            if hs + m < n:
-                hat = rng.standard_normal(m)
-                hat = (hat - lowpass(hat, 0.3)) * np.exp(-np.arange(m) / SR * 80) * 0.045
-                out[hs:hs + m, 0] += hat * 0.8
-                out[hs:hs + m, 1] += hat
+                # sidechain: duck the bed right after each kick
+                pm = int(0.22 * SR)
+                pump[s0:s0 + pm] = np.minimum(pump[s0:s0 + pm], 0.45 + 0.55 * np.linspace(0, 1, pm) ** 0.6)
+        if st >= 5.0 and i % 2 == 1:
+            m = int(0.18 * SR)
+            if s0 + m < n:
+                cl = rng.standard_normal(m)
+                cl = (cl - lowpass(cl, 0.15)) * np.exp(-np.arange(m) / SR * 28) * 0.16
+                out[s0:s0 + m, 0] += cl
+                out[s0:s0 + m, 1] += cl * 0.9
+        for sub in (0.5,):
+            hs = int((st + BEAT * sub) * SR)
+            if st >= 3.6:
+                m = int(0.05 * SR)
+                if hs + m < n:
+                    hat = rng.standard_normal(m)
+                    hat = (hat - lowpass(hat, 0.3)) * np.exp(-np.arange(m) / SR * 80) * 0.06
+                    out[hs:hs + m, 0] += hat * 0.8
+                    out[hs:hs + m, 1] += hat
+    out *= pump[:, None] ** 0.5
     out *= env(n, 1.5, 3.0)[:, None]
     out /= np.max(np.abs(out)) / 0.89
     write(ROOT / "public/audio/music/bed.mp3", out)
@@ -136,7 +150,56 @@ def whoosh():
     write(ROOT / "public/audio/sfx/whoosh.mp3", np.stack([y * (1 - pan), y * pan], 1) * 1.4)
 
 
+def hit():
+    """Short cinematic impact: noise transient + pitched-down body."""
+    m = int(1.2 * SR)
+    tt = np.arange(m) / SR
+    f = 30 + 140 * np.exp(-tt * 18)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 4.5)
+    noise = rng.standard_normal(m)
+    crack = lowpass(noise, 0.5) * np.exp(-tt * 40) * 0.9
+    tail = lowpass(noise, 0.05) * np.exp(-tt * 5) * 0.6
+    y = body + crack + tail
+    y /= np.max(np.abs(y)) / 0.9
+    write(ROOT / "public/audio/sfx/hit.mp3", np.stack([y, np.roll(y, 90)], 1))
+
+
+def boom():
+    """Big sub drop for the logo reveals."""
+    m = int(2.4 * SR)
+    tt = np.arange(m) / SR
+    f = 26 + 70 * np.exp(-tt * 6)
+    sub = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 1.6)
+    noise = rng.standard_normal(m)
+    air = lowpass(noise, 0.12) * np.exp(-tt * 3) * 0.5
+    crack = noise * np.exp(-tt * 60) * 0.35
+    y = sub + air + crack
+    y /= np.max(np.abs(y)) / 0.92
+    write(ROOT / "public/audio/sfx/boom.mp3", np.stack([y, np.roll(y, 140)], 1))
+
+
+def riser():
+    """1.2 s noise + tone sweep that builds into a reveal."""
+    m = int(1.25 * SR)
+    tt = np.arange(m) / SR
+    u = tt / tt[-1]
+    noise = rng.standard_normal(m)
+    alphas = 0.01 + 0.5 * u ** 2
+    y = np.empty(m)
+    acc = 0.0
+    for i in range(m):
+        acc += alphas[i] * (noise[i] - acc)
+        y[i] = acc
+    tone = np.sin(2 * np.pi * np.cumsum(180 + 900 * u ** 2) / SR) * 0.25
+    y = (y / np.max(np.abs(y)) + tone) * u ** 2.2
+    y /= np.max(np.abs(y)) / 0.8
+    write(ROOT / "public/audio/sfx/riser.mp3", np.stack([y * (1 - 0.3 * u), y * (0.7 + 0.3 * u)], 1))
+
+
 if __name__ == "__main__":
     music()
     whoosh()
-    print("wrote public/audio/music/bed.mp3 and public/audio/sfx/whoosh.mp3")
+    hit()
+    boom()
+    riser()
+    print("wrote public/audio/music/bed.mp3 and public/audio/sfx/{whoosh,hit,boom,riser}.mp3")

@@ -6,15 +6,21 @@ import { slide } from "@remotion/transitions/slide";
 import { wipe } from "@remotion/transitions/wipe";
 import { clockWipe } from "@remotion/transitions/clock-wipe";
 import { flip } from "@remotion/transitions/flip";
+import { zoomThrough } from "./components/zoomThrough";
+import { CameraShake, ImpactFlash } from "./components/Fx";
 import { z } from "zod";
 import { CaptionBar } from "./components/CaptionBar";
-import { SCENES, TRANSITIONS, TOTAL_FRAMES, type SceneId, type TransitionKind } from "./timing";
+import { cue, IMPACTS, SCENES, TRANSITIONS, TOTAL_FRAMES, type SceneId, type TransitionKind } from "./timing";
 import {
   MUSIC_FILE,
   MUSIC_DUCKED_VOLUME,
   MUSIC_VOLUME,
   SFX_VOLUME,
   SFX_WHOOSH,
+  SFX_HIT,
+  SFX_BOOM,
+  SFX_RISER,
+  IMPACT_VOLUME,
   VO_VOLUME,
   palette,
 } from "./theme";
@@ -65,8 +71,13 @@ const presentation = (kind: TransitionKind, w: number, h: number): TransitionPre
       return clockWipe({ width: w, height: h });
     case "flip":
       return flip({ direction: "from-right", perspective: 2400 });
+    case "zoom":
+      return zoomThrough();
   }
 };
+
+const RISER_FRAMES = 36;
+const cueCtaLogo = () => cue("cta", 1) - 4;
 
 /** Voiceover intervals, used to duck the music under speech. */
 const VO_RANGES = SCENES.map((s) => [s.voStart, s.voEnd] as const);
@@ -101,6 +112,7 @@ export const LeadingLinkAd: React.FC<z.infer<typeof adSchema>> = ({ showCaptions
         scene i+1 still starts exactly at SCENES[i+1].start and the whole
         series lasts TOTAL_FRAMES.
       */}
+      <CameraShake>
       <TransitionSeries>
         {SCENES.flatMap((s, i) => {
           const Comp = SCENE_COMPONENTS[s.id];
@@ -123,6 +135,8 @@ export const LeadingLinkAd: React.FC<z.infer<typeof adSchema>> = ({ showCaptions
           return items;
         })}
       </TransitionSeries>
+      </CameraShake>
+      <ImpactFlash />
 
       {/* Voiceover: one file per scene, placed at the scene's cue. */}
       {SCENES.map((s, i) => (
@@ -138,6 +152,20 @@ export const LeadingLinkAd: React.FC<z.infer<typeof adSchema>> = ({ showCaptions
       {SCENES.slice(1).map((s) => (
         <Sequence key={`sfx-${s.id}`} from={s.start - 6} durationInFrames={24} name="whoosh" layout="none">
           <Html5Audio src={SFX_WHOOSH} volume={SFX_VOLUME} />
+        </Sequence>
+      ))}
+
+      {/* Impact hits / sub booms on the visual beats (see IMPACTS in timing.ts). */}
+      {IMPACTS.map((im, i) => (
+        <Sequence key={`imp-${i}`} from={im.frame - 1} durationInFrames={75} name={`impact ${im.sound}`} layout="none">
+          <Html5Audio src={im.sound === "boom" ? SFX_BOOM : SFX_HIT} volume={IMPACT_VOLUME * im.strength} />
+        </Sequence>
+      ))}
+
+      {/* Risers building into the two logo reveals. */}
+      {[SCENES[1].start + 24, SCENES[9].start + cueCtaLogo()].map((f, i) => (
+        <Sequence key={`riser-${i}`} from={f - RISER_FRAMES} durationInFrames={RISER_FRAMES + 2} name="riser" layout="none">
+          <Html5Audio src={SFX_RISER} volume={0.5} />
         </Sequence>
       ))}
 

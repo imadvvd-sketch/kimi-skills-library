@@ -29,18 +29,20 @@ the Studio, or render with `--props='{"showCaptions":true}'`.
 
 ```
 src/
-  timing.ts              all scene timings, transitions, caption timing
+  timing.ts              all scene timings, transitions, caption timing, impacts
   theme.ts               palette, fonts, brand strings, audio file and volume constants
   layout.ts              16:9 / 9:16 responsive helpers
   LeadingLinkAd.tsx      the composition: TransitionSeries + audio + captions
   content/voiceover.json voiceover lines and caption phrases (one source of truth)
   content/vo-durations.json  measured voiceover lengths (generated)
+  brand/logoPaths.ts     traced logo paths (generated)
   components/            AnimatedText, GlowCard, IconBadge, Counter, CaptionBar,
-                         Chip, Logo, Background, SceneFrame
+                         Chip, BrandLogo, Background, SceneFrame, Fx, zoomThrough
   scenes/                Scene01Hook ... Scene10Cta
 scripts/
   generate_voiceover.py  makes public/audio/vo/*.mp3 and vo-durations.json
-  generate_music.py      synthesizes the music bed and whoosh (license-free)
+  generate_music.py      synthesizes the music bed and SFX (license-free)
+  trace_logo.py          vectorizes the supplied logo
   render-stills.mjs      renders verification stills
 ```
 
@@ -95,18 +97,32 @@ licensed track:
 The music plays at `MUSIC_VOLUME` (0.15) and ducks to `MUSIC_DUCKED_VOLUME`
 under the voice. It fades out over the final 20 frames.
 
-## Brand colors
+## Brand: logo and colors
 
-The brief asked for colors pulled from the live site and logo SVGs. The
-environment this was built in could not reach theleadinglink.ae because its
-network policy blocked the domain. So the video uses the brief's fallback
-palette and an SVG chain-link mark with a "THE LEADING LINK" text wordmark.
+* **Logo:** `public/brand/logo-source.jpg` is the client-supplied logo.
+  `scripts/trace_logo.py` vectorizes it with potrace into
+  `src/brand/logoPaths.ts` and `public/brand/logo.svg`. It produces one
+  compound path per brand ink. `components/BrandLogo.tsx` animates it in
+  parts: the swirl spins in, then The / Leading / Link / .ae rise in, then
+  the tagline writes on. It has two variants:
+  * `color` for light backgrounds, used on the white end card
+  * `reverse` for dark backgrounds, where the navy is swapped for white
+  If you get the official vector logo, replace the paths in
+  `src/brand/logoPaths.ts`.
+* **Colors:** brand green `#63AF45` and brand navy `#2D2F7A`, sampled from
+  the logo. The tints used on dark screens are derived from these two inks.
+  The full table is in `src/theme.ts`. The live site could not be reached
+  from the build environment, so the colors come from the logo file.
 
-To apply the real brand:
+## Effects and sound design
 
-1. Edit `palette` in `src/theme.ts`.
-2. Optionally, put the official SVG in `public/brand/` and render it in
-   `components/Logo.tsx` with `<Img src={staticFile("brand/...svg")} />`.
+* **Impacts:** `IMPACTS` in `src/timing.ts` lists every scene change and the
+  big beats of the voiceover: the logo landing, "We architect growth", and
+  each slogan line. On each impact the picture flashes and shakes, a light
+  sweep crosses the frame, and a hit plays. A sub "boom" plays on the two
+  logo reveals, with a riser leading into each.
+* **Sound files:** all sound effects and the music bed are synthesized by
+  `scripts/generate_music.py`, so there are no rights issues.
 
 ## Notes
 

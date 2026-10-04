@@ -25,7 +25,7 @@ const polished = Array.from({ length: N }, (_, i) => {
   const r = 160 * (0.82 * k + 0.18);
   return [Math.cos(a - Math.PI / 2) * r, Math.sin(a - Math.PI / 2) * r];
 });
-const PALETTE = [palette.bgDark, palette.primary, palette.secondary, palette.accent, palette.highlight];
+const PALETTE = [palette.brandNavy, palette.primary, palette.brandGreen, palette.accent, palette.paper];
 
 export const Scene07Branding: React.FC<SceneProps> = ({ duration }) => {
   const frame = useCurrentFrame();

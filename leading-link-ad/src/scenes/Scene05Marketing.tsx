@@ -3,7 +3,7 @@ import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Share2, Mail, Star, MessageCircle } from "lucide-react";
 import { SceneFrame } from "../components/SceneFrame";
 import { IconBadge } from "../components/IconBadge";
-import { ChainLinkMark } from "../components/Logo";
+import { BrandSwirl } from "../components/BrandLogo";
 import { pop, range, clamp } from "../components/anim";
 import { fonts, palette } from "../theme";
 import { useLayout } from "../layout";
@@ -79,7 +79,7 @@ export const Scene05Marketing: React.FC<SceneProps> = ({ duration }) => {
           transform: `scale(${center * pulse})`,
         }}
       >
-        <ChainLinkMark size={120} />
+        <BrandSwirl size={140} rotate={frame * 2} />
       </div>
       {ITEMS.map((it, i) => (
         <div key={it.label} style={{ position: "absolute", left: pos[i].x, top: pos[i].y, transform: "translate(-50%, -38%)" }}>

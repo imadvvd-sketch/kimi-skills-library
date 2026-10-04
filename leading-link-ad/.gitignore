@@ -2,3 +2,4 @@ node_modules/
 .tts-models/
 build/
 *.f32
+stills/*-f*.jpg

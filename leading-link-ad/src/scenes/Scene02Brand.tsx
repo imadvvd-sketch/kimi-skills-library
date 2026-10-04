@@ -2,40 +2,36 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { SceneFrame } from "../components/SceneFrame";
 import { AnimatedText } from "../components/AnimatedText";
-import { Logo } from "../components/Logo";
+import { BrandLogo } from "../components/BrandLogo";
 import { pop, range, clamp } from "../components/anim";
-import { palette } from "../theme";
+import { fonts, palette } from "../theme";
 import { useLayout } from "../layout";
 import { cue } from "../timing";
 import type { SceneProps } from "./types";
 
-// Node constellation that assembles around the logo before it draws on.
-const NODES = Array.from({ length: 14 }, (_, i) => {
-  const a = (i / 14) * Math.PI * 2;
-  return {
-    // scattered start
-    sx: Math.cos(a * 3.3 + 1) * 820,
-    sy: Math.sin(a * 2.1 + 0.4) * 460,
-    // ring around the mark
-    ex: Math.cos(a) * 330,
-    ey: Math.sin(a) * 200,
-  };
+// Sparks that rush in and collapse into the swirl as it lands.
+const SPARKS = Array.from({ length: 26 }, (_, i) => {
+  const a = (i / 26) * Math.PI * 2 + (i % 3) * 0.3;
+  return { a, r: 700 + (i % 5) * 140, size: 4 + (i % 4) * 2 };
 });
+
+const LOGO_DELAY = 10; // the swirl lands ~14 frames later, on the boom
 
 export const Scene02Brand: React.FC<SceneProps> = ({ duration }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { v, vertical } = useLayout();
+  const { v } = useLayout();
   const growthAt = cue("brand", 2) - 6; // "We don't just run campaigns."
-  const gather = range(frame, 0, 26);
-  const nodesOut = range(frame, 30, 44);
-  // logo lifts up to make room for the headline
+  const collapse = range(frame, 0, LOGO_DELAY + 14);
+  const burst = interpolate(frame, [LOGO_DELAY + 10, LOGO_DELAY + 16, LOGO_DELAY + 50], [0, 1, 0.25], clamp);
   const lift = range(frame, growthAt, growthAt + 18);
+  const logoW = v(1180, 900);
+  const descriptor = pop(frame, fps, cue("brand", 1) - 4, 200);
   return (
     <SceneFrame duration={duration} seed={1}>
       {/* skyline bars rise behind "WE ARCHITECT GROWTH" */}
-      <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: v(180, 330) }}>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: v(18, 12), height: v(520, 760), opacity: 0.9 }}>
+      <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: v(110, 240) }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: v(18, 12), height: v(520, 760) }}>
           {Array.from({ length: v(22, 14) }, (_, i) => {
             const n = v(22, 14);
             const center = 1 - Math.abs(i - (n - 1) / 2) / ((n - 1) / 2);
@@ -48,9 +44,9 @@ export const Scene02Brand: React.FC<SceneProps> = ({ duration }) => {
                   width: v(56, 52),
                   height: h * p,
                   borderRadius: "10px 10px 0 0",
-                  background: `linear-gradient(180deg, ${i % 3 === 0 ? palette.accent : palette.primary}cc, ${palette.secondary}22)`,
-                  boxShadow: `0 0 30px ${palette.primary}44`,
-                  opacity: 0.35 + 0.35 * center,
+                  background: `linear-gradient(180deg, ${i % 3 === 0 ? palette.accent : palette.primary}dd, ${palette.brandNavy}22)`,
+                  boxShadow: `0 0 30px ${i % 3 === 0 ? palette.brandGreen : palette.primary}55`,
+                  opacity: 0.3 + 0.4 * center,
                 }}
               />
             );
@@ -58,47 +54,92 @@ export const Scene02Brand: React.FC<SceneProps> = ({ duration }) => {
         </div>
       </AbsoluteFill>
 
+      {/* light burst + rays behind the logo */}
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
+        <div
+          style={{
+            position: "absolute",
+            width: 1600,
+            height: 1600,
+            borderRadius: 999,
+            background: `radial-gradient(circle, rgba(255,255,255,0.5) 0%, ${palette.brandGreen}55 18%, ${palette.primary}33 38%, transparent 62%)`,
+            opacity: burst * (1 - lift),
+            transform: `scale(${0.6 + 0.6 * burst})`,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            width: 2400,
+            height: 2400,
+            background: `repeating-conic-gradient(from ${frame * 0.8}deg, ${palette.brandGreen}22 0deg 4deg, transparent 4deg 18deg)`,
+            maskImage: "radial-gradient(circle, black 0%, transparent 55%)",
+            WebkitMaskImage: "radial-gradient(circle, black 0%, transparent 55%)",
+            opacity: burst * 0.8 * (1 - lift),
+          }}
+        />
+      </AbsoluteFill>
+
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
         <div
           style={{
             position: "relative",
-            transform: `translateY(${lift * v(-200, -330)}px) scale(${1 - 0.22 * lift})`,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 26,
+            transform: `translateY(${lift * v(-250, -380)}px) scale(${1 - 0.3 * lift})`,
           }}
         >
-          {/* glowing nodes + links converging */}
+          {/* sparks collapsing into the swirl */}
           <svg
-            width={1800}
-            height={1000}
-            viewBox="-900 -500 1800 1000"
-            style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)", opacity: 1 - nodesOut, overflow: "visible" }}
+            width={10}
+            height={10}
+            style={{ position: "absolute", left: logoW * (226 / 703), top: logoW * (60 / 703), overflow: "visible", opacity: 1 - collapse }}
           >
-            {NODES.map((n, i) => {
-              const x = interpolate(gather, [0, 1], [n.sx, n.ex]);
-              const y = interpolate(gather, [0, 1], [n.sy, n.ey]);
-              const nx = NODES[(i + 1) % NODES.length];
-              const x2 = interpolate(gather, [0, 1], [nx.sx, nx.ex]);
-              const y2 = interpolate(gather, [0, 1], [nx.sy, nx.ey]);
+            {SPARKS.map((s, i) => {
+              const r = s.r * (1 - collapse);
               return (
-                <g key={i}>
-                  <line x1={x} y1={y} x2={x2} y2={y2} stroke={palette.accent} strokeOpacity={0.5 * gather} strokeWidth={2} />
-                  <circle cx={x} cy={y} r={7} fill={palette.accent} style={{ filter: `drop-shadow(0 0 10px ${palette.accent})` }} />
-                </g>
+                <line
+                  key={i}
+                  x1={Math.cos(s.a) * r}
+                  y1={Math.sin(s.a) * r}
+                  x2={Math.cos(s.a) * (r + 60 * (1 - collapse))}
+                  y2={Math.sin(s.a) * (r + 60 * (1 - collapse))}
+                  stroke={i % 2 ? palette.accent : "#fff"}
+                  strokeWidth={s.size}
+                  strokeLinecap="round"
+                />
               );
             })}
           </svg>
-          <Logo delay={18} showTagline taglineDelay={cue("brand", 1) - 18} vertical={vertical} scale={v(1, 0.95)} />
+          <BrandLogo width={logoW} delay={LOGO_DELAY} variant="reverse" glow={0.4 + 0.6 * burst} />
+          <div
+            style={{
+              fontFamily: fonts.body,
+              fontWeight: 600,
+              fontSize: v(32, 30),
+              letterSpacing: "0.22em",
+              color: palette.textMuted,
+              textTransform: "uppercase",
+              opacity: descriptor * (1 - lift),
+              transform: `translateY(${(1 - descriptor) * 16}px)`,
+            }}
+          >
+            Performance-led digital agency · Dubai
+          </div>
         </div>
       </AbsoluteFill>
 
-      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", paddingTop: v(260, 380) }}>
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", paddingTop: v(250, 360) }}>
         <div style={{ opacity: interpolate(frame, [growthAt, growthAt + 4], [0, 1], clamp) }}>
           <AnimatedText
             text="WE ARCHITECT GROWTH"
             delay={cue("brand", 3) - 6}
             highlight={["growth"]}
-            size={v(130, 120)}
+            size={v(140, 124)}
             stagger={5}
-            style={{ maxWidth: v(1700, 920) }}
+            style={{ maxWidth: v(1760, 920) }}
           />
         </div>
       </AbsoluteFill>

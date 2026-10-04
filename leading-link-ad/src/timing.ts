@@ -22,7 +22,7 @@ export type SceneId =
 
 export type TransitionKind =
   | "fade" | "slide-left" | "slide-up" | "wipe-right" | "wipe-up"
-  | "clock" | "flip";
+  | "clock" | "flip" | "zoom";
 
 type Board = { id: SceneId; frames: number; extraHold?: number };
 
@@ -43,15 +43,15 @@ const STORYBOARD: Board[] = [
 
 /** Transition INTO scene i+1 (index i). Varied on purpose, 8-12 frames. */
 export const TRANSITIONS: { kind: TransitionKind; frames: number }[] = [
-  { kind: "fade", frames: 10 }, // glitch-out hook -> brand
+  { kind: "zoom", frames: 10 }, // glitch-out hook -> punch into the logo
   { kind: "wipe-right", frames: 12 },
+  { kind: "zoom", frames: 10 },
   { kind: "slide-left", frames: 10 },
-  { kind: "clock", frames: 12 },
-  { kind: "slide-up", frames: 10 },
+  { kind: "zoom", frames: 10 },
   { kind: "wipe-up", frames: 12 },
   { kind: "flip", frames: 12 },
   { kind: "slide-left", frames: 10 },
-  { kind: "fade", frames: 12 },
+  { kind: "zoom", frames: 12 },
 ];
 
 const voFrames = (id: SceneId) =>
@@ -160,3 +160,34 @@ export const cue = (id: SceneId, i: number) => {
   const c = CAPTIONS.filter((x) => x.sceneId === id)[i];
   return c ? c.start - sceneById(id).start : 0;
 };
+
+// ---------------------------------------------------------------------------
+// Impacts: frames where the picture flashes and shakes and an impact sound
+// hits. Every scene change is one, plus the big beats of the voiceover.
+export type Impact = { frame: number; strength: number; sound: "hit" | "boom" };
+
+/** CTA slogan beats: "One agency." / "Every channel." / "Real growth." */
+export const CTA_BEATS = (() => {
+  const cta = sceneById("cta");
+  const start = cta.start + cue("cta", 0);
+  const end = cta.start + cue("cta", 1);
+  const parts = ["One agency. ", "Every channel. ", "Real growth."];
+  const total = parts.join("").length;
+  let acc = 0;
+  return parts.map((t) => {
+    const f = start + Math.round((acc / total) * (end - start));
+    acc += t.length;
+    return f - cta.start;
+  });
+})();
+
+export const IMPACTS: Impact[] = ([
+  ...SCENES.slice(1).map((s) => ({ frame: s.start, strength: 0.55, sound: "hit" as const })),
+  { frame: sceneById("hook").start + cue("hook", 1) - 2, strength: 0.8, sound: "hit" },
+  // logo lands
+  { frame: sceneById("brand").start + 24, strength: 1, sound: "boom" },
+  { frame: sceneById("brand").start + cue("brand", 3) - 2, strength: 0.9, sound: "hit" },
+  ...CTA_BEATS.slice(1).map((f) => ({ frame: sceneById("cta").start + f - 2, strength: 0.7, sound: "hit" as const })),
+  // final logo on the white end card
+  { frame: sceneById("cta").start + cue("cta", 1) - 4, strength: 1, sound: "boom" },
+] as Impact[]).sort((a, b) => a.frame - b.frame);
