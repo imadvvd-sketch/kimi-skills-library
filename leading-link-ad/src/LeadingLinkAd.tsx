@@ -10,7 +10,7 @@ import { zoomThrough } from "./components/zoomThrough";
 import { CameraShake, ImpactFlash } from "./components/Fx";
 import { z } from "zod";
 import { CaptionBar } from "./components/CaptionBar";
-import { cue, IMPACTS, SCENES, TRANSITIONS, TOTAL_FRAMES, type SceneId, type TransitionKind } from "./timing";
+import { cue, IMPACTS, SCENES, TRANSITIONS, TOTAL_FRAMES, VO_FILE, VO_OFFSET, type SceneId, type TransitionKind } from "./timing";
 import {
   MUSIC_FILE,
   MUSIC_DUCKED_VOLUME,
@@ -36,7 +36,6 @@ import { Scene07Branding } from "./scenes/Scene07Branding";
 import { Scene08Video } from "./scenes/Scene08Video";
 import { Scene09Automation } from "./scenes/Scene09Automation";
 import { Scene10Cta } from "./scenes/Scene10Cta";
-import voiceover from "./content/voiceover.json";
 
 export const adSchema = z.object({
   showCaptions: z.boolean(),
@@ -77,7 +76,7 @@ const presentation = (kind: TransitionKind, w: number, h: number): TransitionPre
 };
 
 const RISER_FRAMES = 36;
-const cueCtaLogo = () => cue("cta", 1) - 4;
+const cueCtaLogo = () => cue("cta", 3) - 4;
 
 /** Voiceover intervals, used to duck the music under speech. */
 const VO_RANGES = SCENES.map((s) => [s.voStart, s.voEnd] as const);
@@ -138,15 +137,10 @@ export const LeadingLinkAd: React.FC<z.infer<typeof adSchema>> = ({ showCaptions
       </CameraShake>
       <ImpactFlash />
 
-      {/* Voiceover: one file per scene, placed at the scene's cue. */}
-      {SCENES.map((s, i) => (
-        <Sequence key={`vo-${s.id}`} from={s.voStart} name={`VO ${s.id}`} layout="none">
-          <Html5Audio
-            src={staticFile(`audio/vo/${String(i + 1).padStart(2, "0")}-${voiceover.lines[i].id}.mp3`)}
-            volume={VO_VOLUME}
-          />
-        </Sequence>
-      ))}
+      {/* Voiceover: one continuous take; scene timing is derived from it. */}
+      <Sequence from={VO_OFFSET} name="Voiceover" layout="none">
+        <Html5Audio src={staticFile(VO_FILE)} volume={VO_VOLUME} />
+      </Sequence>
 
       {/* Whoosh on each scene change, starting just before the cut. */}
       {SCENES.slice(1).map((s) => (

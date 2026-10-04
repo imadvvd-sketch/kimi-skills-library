@@ -1,55 +1,94 @@
 {
-  "_comment": "Single source of truth for the voiceover. 'tts' is what the voice engine reads; 'captions' are the on-screen caption phrases (shown in order, timed proportionally to their length across the measured clip). Run `npm run voiceover` after editing.",
+  "_comment": "Single source of truth for the script. 'tts' is what a voice engine reads; 'captions' are the phrases scripts/align_voiceover.py locates in the recorded take (they drive scene timing and the optional captions).",
   "lines": [
     {
       "id": "hook",
       "tts": "Your customers are searching right now. Are they finding you?",
-      "captions": ["Your customers are searching right now.", "Are they finding you?"]
+      "captions": [
+        "Your customers are searching right now.",
+        "Are they finding you?"
+      ]
     },
     {
       "id": "brand",
       "tts": "We're The Leading Link, a performance-led digital agency in Dubai. We don't just run campaigns. We architect growth.",
-      "captions": ["We're The Leading Link,", "a performance-led digital agency in Dubai.", "We don't just run campaigns.", "We architect growth."]
+      "captions": [
+        "We're The Leading Link,",
+        "a performance-led digital agency in Dubai.",
+        "We don't just run campaigns.",
+        "We architect growth."
+      ]
     },
     {
       "id": "seo",
       "tts": "Rank higher on Google, and get recommended by AI search engines like ChatGPT and Perplexity. That's SEO and GEO.",
-      "captions": ["Rank higher on Google,", "and get recommended by AI search engines", "like ChatGPT and Perplexity.", "That's SEO and GEO."]
+      "captions": [
+        "Rank higher on Google,",
+        "and get recommended by AI search engines",
+        "like ChatGPT and Perplexity.",
+        "That's SEO and GEO."
+      ]
     },
     {
       "id": "web",
       "tts": "Fast, beautiful websites and online stores, built to turn visitors into customers.",
-      "captions": ["Fast, beautiful websites and online stores,", "built to turn visitors into customers."]
+      "captions": [
+        "Fast, beautiful websites and online stores,",
+        "built to turn visitors into customers."
+      ]
     },
     {
       "id": "marketing",
       "tts": "Social media, email, influencers and WhatsApp, all working together as one.",
-      "captions": ["Social media, email, influencers and WhatsApp,", "all working together as one."]
+      "captions": [
+        "Social media, email, influencers and WhatsApp,",
+        "all working together as one."
+      ]
     },
     {
       "id": "ads",
       "tts": "Smart ads on Google, Meta, Snapchat, X and Reddit, with every conversion tracked.",
-      "captions": ["Smart ads on Google, Meta, Snapchat, X and Reddit,", "with every conversion tracked."]
+      "captions": [
+        "Smart ads on Google, Meta, Snapchat, X and Reddit,",
+        "with every conversion tracked."
+      ]
     },
     {
       "id": "branding",
       "tts": "A brand people remember, and PR that gets you noticed.",
-      "captions": ["A brand people remember,", "and PR that gets you noticed."]
+      "captions": [
+        "A brand people remember,",
+        "and PR that gets you noticed."
+      ]
     },
     {
       "id": "video",
       "tts": "Videos, 3D animation and AI video, plus events and exhibition stands that stop people in their tracks.",
-      "captions": ["Videos, 3D animation and AI video,", "plus events and exhibition stands", "that stop people in their tracks."]
+      "captions": [
+        "Videos, 3D animation and AI video,",
+        "plus events and exhibition stands",
+        "that stop people in their tracks."
+      ]
     },
     {
       "id": "automation",
       "tts": "And AI automation: chatbots, WhatsApp and CRM workflows that work while you sleep.",
-      "captions": ["And AI automation:", "chatbots, WhatsApp and CRM workflows", "that work while you sleep."]
+      "captions": [
+        "And AI automation:",
+        "chatbots, WhatsApp and CRM workflows",
+        "that work while you sleep."
+      ]
     },
     {
       "id": "cta",
       "tts": "One agency. Every channel. Real growth. The Leading Link. Visit theleadinglink dot A E.",
-      "captions": ["One agency. Every channel. Real growth.", "The Leading Link.", "Visit theleadinglink.ae"]
+      "captions": [
+        "One agency.",
+        "Every channel.",
+        "Real growth.",
+        "The Leading Link.",
+        "Visit theleadinglink.ae"
+      ]
     }
   ]
 }

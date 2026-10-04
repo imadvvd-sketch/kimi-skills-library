@@ -33,14 +33,15 @@ src/
   theme.ts               palette, fonts, brand strings, audio file and volume constants
   layout.ts              16:9 / 9:16 responsive helpers
   LeadingLinkAd.tsx      the composition: TransitionSeries + audio + captions
-  content/voiceover.json voiceover lines and caption phrases (one source of truth)
-  content/vo-durations.json  measured voiceover lengths (generated)
+  content/voiceover.json script lines and phrases (one source of truth)
+  content/vo-timeline.json   where each phrase starts in the take (generated)
   brand/logoPaths.ts     traced logo paths (generated)
   components/            AnimatedText, GlowCard, IconBadge, Counter, CaptionBar,
                          Chip, BrandLogo, Background, SceneFrame, Fx, zoomThrough
   scenes/                Scene01Hook ... Scene10Cta
 scripts/
-  generate_voiceover.py  makes public/audio/vo/*.mp3 and vo-durations.json
+  generate_voiceover.py  generates a take with ElevenLabs or Kokoro (optional)
+  align_voiceover.py     finds every phrase in the take -> vo-timeline.json
   generate_music.py      synthesizes the music bed and SFX (license-free)
   trace_logo.py          vectorizes the supplied logo
   render-stills.mjs      renders verification stills
@@ -48,42 +49,53 @@ scripts/
 
 ## Changing texts
 
-* **Voiceover and captions:** edit `src/content/voiceover.json`. `tts` is the
-  text the voice reads, and `captions` is the list of on-screen caption
-  phrases. Then run `npm run voiceover`.
+* **Voiceover script:** edit `src/content/voiceover.json`. `tts` is the text a
+  voice engine reads. `captions` is the list of phrases that
+  `npm run align` looks for in the take. After changing the script, record or
+  generate a new take, then run `npm run align`.
 * **On-screen titles and labels:** these are in each scene file under
   `src/scenes/`. Brand name, tagline and URL are in `brand` in `src/theme.ts`.
 
-## Changing timings
+## Timing
 
-Edit `STORYBOARD` and `TRANSITIONS` in `src/timing.ts`. Each scene's slot is
-calculated as follows:
+The voiceover drives the timing. The video plays one continuous take,
+`public/audio/vo/voiceover.mp3`, from frame 0.
 
-1. Start from the storyboard length.
-2. Stretch a scene if its measured voiceover line plus padding needs more
-   room (`VO_LEAD`, `MIN_TAIL`).
-3. Take the extra frames back from scenes that have slack, so the video always
-   stays at exactly `TOTAL_FRAMES` (1800).
+* **Scene starts:** each scene cuts in `SCENE_LEAD` frames before its line
+  starts in the take.
+* **Animations:** these sync to individual phrases with
+  `cue(sceneId, phraseIndex)`.
+* **Total length:** stays at exactly `TOTAL_FRAMES` (1800). The last scene
+  holds the end card until the end.
 
-Scene animations sync to the voiceover with `cue(sceneId, phraseIndex)`, so
-they follow automatically when you retime or re-record.
+Phrase positions come from `src/content/vo-timeline.json`, which
+`npm run align` (`scripts/align_voiceover.py`) produces as follows:
 
-## Swapping the voice
+1. Synthesize a reference read of the script phrases with Kokoro.
+2. Align that reference to the real take with DTW on MFCC features.
+3. Snap each boundary to the nearest pause in the take.
 
-`npm run voiceover` picks its engine automatically:
+You can also adjust the start times in `vo-timeline.json` by hand.
+Transitions are set in `TRANSITIONS` in `src/timing.ts`.
 
-* **ElevenLabs** (recommended for a cinematic read): run
-  `ELEVENLABS_API_KEY=... [ELEVENLABS_VOICE_ID=...] npm run voiceover`.
-* **Kokoro** (default, local and free): an Apache-2.0 open-weight neural TTS.
-  Its model (~350 MB) downloads into `.tts-models/` the first time it runs.
-  Change the voice with `KOKORO_VOICE` (for example `am_michael`,
-  `bm_george` or `af_heart`) and the speed with `KOKORO_SPEED`.
-  It needs `pip install kokoro-onnx soundfile`.
-* **Your own recordings:** replace `public/audio/vo/NN-<id>.mp3` with your
-  files. Then update the durations in `src/content/vo-durations.json`, which
-  you can measure with `ffprobe`.
+## The voice
 
-Each line is trimmed of silence and loudness-normalized (-16 LUFS).
+The current take is an **ElevenLabs** read ("Marcus - Bright, Upbeat and
+Clear"), supplied by the client. The original is in
+`public/audio/vo/source/elevenlabs-marcus.mp3`. A copy loudness-normalized
+to -16 LUFS is in `public/audio/vo/voiceover.mp3`.
+
+To swap it:
+
+* **Another recording:** replace `public/audio/vo/voiceover.mp3`. Normalize
+  it first, for example with
+  `ffmpeg -i in.mp3 -af loudnorm=I=-16:TP=-1.5 -ar 44100 -ac 2 voiceover.mp3`.
+  Then run `npm run align`. The take must be shorter than 60 s.
+* **Generate one:** run `npm run voiceover`. It uses ElevenLabs if
+  `ELEVENLABS_API_KEY` is set, otherwise the free local Kokoro model. Then
+  run `npm run align`. The aligner needs
+  `pip install librosa soundfile kokoro-onnx` and the Kokoro model in
+  `.tts-models/`, which `npm run voiceover` downloads.
 
 ## Swapping the music
 

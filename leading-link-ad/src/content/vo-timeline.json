@@ -1,0 +1,192 @@
+{
+  "file": "audio/vo/voiceover.mp3",
+  "durationSec": 59.481,
+  "lines": [
+    {
+      "id": "hook",
+      "start": 0.0,
+      "phrases": [
+        {
+          "text": "Your customers are searching right now.",
+          "start": 0.0
+        },
+        {
+          "text": "Are they finding you?",
+          "start": 2.579
+        }
+      ],
+      "end": 3.33
+    },
+    {
+      "id": "brand",
+      "start": 3.971,
+      "phrases": [
+        {
+          "text": "We're The Leading Link,",
+          "start": 3.971
+        },
+        {
+          "text": "a performance-led digital agency in Dubai.",
+          "start": 5.19
+        },
+        {
+          "text": "We don't just run campaigns.",
+          "start": 7.886
+        },
+        {
+          "text": "We architect growth.",
+          "start": 9.514
+        }
+      ],
+      "end": 11.279
+    },
+    {
+      "id": "seo",
+      "start": 11.415,
+      "phrases": [
+        {
+          "text": "Rank higher on Google,",
+          "start": 11.415
+        },
+        {
+          "text": "and get recommended by AI search engines",
+          "start": 12.659
+        },
+        {
+          "text": "like ChatGPT and Perplexity.",
+          "start": 14.571
+        },
+        {
+          "text": "That's SEO and GEO.",
+          "start": 16.684
+        }
+      ],
+      "end": 18.956
+    },
+    {
+      "id": "web",
+      "start": 19.081,
+      "phrases": [
+        {
+          "text": "Fast, beautiful websites and online stores,",
+          "start": 19.081
+        },
+        {
+          "text": "built to turn visitors into customers.",
+          "start": 21.896
+        }
+      ],
+      "end": 24.039
+    },
+    {
+      "id": "marketing",
+      "start": 24.357,
+      "phrases": [
+        {
+          "text": "Social media, email, influencers and WhatsApp,",
+          "start": 24.357
+        },
+        {
+          "text": "all working together as one.",
+          "start": 27.894
+        }
+      ],
+      "end": 29.521
+    },
+    {
+      "id": "ads",
+      "start": 29.842,
+      "phrases": [
+        {
+          "text": "Smart ads on Google, Meta, Snapchat, X and Reddit,",
+          "start": 29.842
+        },
+        {
+          "text": "with every conversion tracked.",
+          "start": 33.807
+        }
+      ],
+      "end": 35.815
+    },
+    {
+      "id": "branding",
+      "start": 35.916,
+      "phrases": [
+        {
+          "text": "A brand people remember,",
+          "start": 35.916
+        },
+        {
+          "text": "and PR that gets you noticed.",
+          "start": 37.596
+        }
+      ],
+      "end": 39.621
+    },
+    {
+      "id": "video",
+      "start": 39.796,
+      "phrases": [
+        {
+          "text": "Videos, 3D animation and AI video,",
+          "start": 39.796
+        },
+        {
+          "text": "plus events and exhibition stands",
+          "start": 42.777
+        },
+        {
+          "text": "that stop people in their tracks.",
+          "start": 44.42
+        }
+      ],
+      "end": 46.514
+    },
+    {
+      "id": "automation",
+      "start": 46.673,
+      "phrases": [
+        {
+          "text": "And AI automation:",
+          "start": 46.673
+        },
+        {
+          "text": "chatbots, WhatsApp and CRM workflows",
+          "start": 48.435
+        },
+        {
+          "text": "that work while you sleep.",
+          "start": 50.898
+        }
+      ],
+      "end": 52.196
+    },
+    {
+      "id": "cta",
+      "start": 52.761,
+      "phrases": [
+        {
+          "text": "One agency.",
+          "start": 52.761
+        },
+        {
+          "text": "Every channel.",
+          "start": 53.869
+        },
+        {
+          "text": "Real growth.",
+          "start": 54.874
+        },
+        {
+          "text": "The Leading Link.",
+          "start": 56.094
+        },
+        {
+          "text": "Visit theleadinglink.ae",
+          "start": 57.361
+        }
+      ],
+      "end": 59.242
+    }
+  ]
+}

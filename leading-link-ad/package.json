@@ -11,7 +11,9 @@
     "music": "python3 scripts/generate_music.py",
     "stills": "node scripts/render-stills.mjs",
     "render": "remotion render LeadingLinkAd out/leading-link-ad.mp4 --codec=h264 --crf=18",
-    "render:vertical": "remotion render LeadingLinkAdVertical out/leading-link-ad-vertical.mp4 --codec=h264 --crf=18"
+    "render:vertical": "remotion render LeadingLinkAdVertical out/leading-link-ad-vertical.mp4 --codec=h264 --crf=18",
+    "align": "python3 scripts/align_voiceover.py",
+    "logo": "python3 scripts/trace_logo.py"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.532",

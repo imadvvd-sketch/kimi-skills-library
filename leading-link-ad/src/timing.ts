@@ -1,20 +1,20 @@
 /**
- * All timing lives here. Edit STORYBOARD to retime scenes; the voiceover
- * durations measured by `npm run voiceover` are folded in automatically so a
- * line never runs into the next scene, and the total always stays TOTAL_FRAMES.
+ * All timing lives here. Scene timing follows the recorded voiceover: every
+ * scene starts just before its line in the take (src/content/vo-timeline.json,
+ * produced by `npm run align`), and the total always stays TOTAL_FRAMES.
  */
-import voDurations from "./content/vo-durations.json";
-import voiceover from "./content/voiceover.json";
+import timeline from "./content/vo-timeline.json";
 
 export const FPS = 30;
 export const TOTAL_FRAMES = 1800;
 export const WIDTH = 1920;
 export const HEIGHT = 1080;
 
-/** Frames between a scene's first frame and its voiceover line starting. */
-export const VO_LEAD = 6;
-/** Minimum breathing room after a line ends before the next scene starts. */
-const MIN_TAIL = 10;
+/** The single voiceover take, placed at this frame. */
+export const VO_FILE = timeline.file;
+export const VO_OFFSET = 0;
+/** A scene cuts in this many frames before its line starts. */
+const SCENE_LEAD = 8;
 
 export type SceneId =
   | "hook" | "brand" | "seo" | "web" | "marketing"
@@ -23,23 +23,6 @@ export type SceneId =
 export type TransitionKind =
   | "fade" | "slide-left" | "slide-up" | "wipe-right" | "wipe-up"
   | "clock" | "flip" | "zoom";
-
-type Board = { id: SceneId; frames: number; extraHold?: number };
-
-/** The storyboard from the brief (frames at 30 fps, sums to 1800). */
-const STORYBOARD: Board[] = [
-  { id: "hook", frames: 150 },
-  { id: "brand", frames: 210 },
-  { id: "seo", frames: 240 },
-  { id: "web", frames: 180 },
-  { id: "marketing", frames: 180 },
-  { id: "ads", frames: 180 },
-  { id: "branding", frames: 180 },
-  { id: "video", frames: 180 },
-  { id: "automation", frames: 150 },
-  // the final scene holds the URL on screen after the line ends
-  { id: "cta", frames: 150, extraHold: 24 },
-];
 
 /** Transition INTO scene i+1 (index i). Varied on purpose, 8-12 frames. */
 export const TRANSITIONS: { kind: TransitionKind; frames: number }[] = [
@@ -54,47 +37,11 @@ export const TRANSITIONS: { kind: TransitionKind; frames: number }[] = [
   { kind: "zoom", frames: 12 },
 ];
 
-const voFrames = (id: SceneId) =>
-  Math.ceil(((voDurations.seconds as Record<string, number>)[id] ?? 0) * FPS);
+const sec = (t: number) => VO_OFFSET + Math.round(t * FPS);
 
-/**
- * Scene "slot" lengths. A slot is the time from a scene's start to the next
- * scene's start (the transition overlap is extra, see LeadingLinkAd.tsx), so
- * slots always sum to TOTAL_FRAMES.
- *
- * 1. each scene needs at least VO_LEAD + line + MIN_TAIL (+ extraHold)
- * 2. scenes that are too short are stretched to that minimum
- * 3. the frames this costs are taken from scenes with slack, in proportion to
- *    how much slack each one has
- */
-function computeSlots(): number[] {
-  const need = STORYBOARD.map(
-    (s) => VO_LEAD + voFrames(s.id) + MIN_TAIL + (s.extraHold ?? 0),
-  );
-  const slots = STORYBOARD.map((s, i) => Math.max(s.frames, need[i]));
-  let over = slots.reduce((a, b) => a + b, 0) - TOTAL_FRAMES;
-  const slack = slots.map((v, i) => Math.max(0, v - need[i]));
-  const totalSlack = slack.reduce((a, b) => a + b, 0);
-  if (over > totalSlack) {
-    throw new Error(
-      `Voiceover is ${over - totalSlack} frames too long to fit ${TOTAL_FRAMES} frames`,
-    );
-  }
-  const cut = slack.map((s) => Math.floor((s / (totalSlack || 1)) * over));
-  for (let i = 0; i < slots.length; i++) slots[i] -= cut[i];
-  over -= cut.reduce((a, b) => a + b, 0);
-  // hand out rounding leftovers to the scenes with the most slack left
-  while (over > 0) {
-    const i = slots
-      .map((v, idx) => [v - need[idx], idx])
-      .sort((a, b) => b[0] - a[0])[0][1];
-    slots[i]--;
-    over--;
-  }
-  return slots;
+if (sec(timeline.durationSec) > TOTAL_FRAMES) {
+  throw new Error(`Voiceover (${timeline.durationSec}s) is longer than ${TOTAL_FRAMES} frames`);
 }
-
-const slots = computeSlots();
 
 export type SceneTiming = {
   id: SceneId;
@@ -110,47 +57,35 @@ export type SceneTiming = {
   voEnd: number;
 };
 
-export const SCENES: SceneTiming[] = (() => {
-  let t = 0;
-  return STORYBOARD.map((s, index) => {
-    const start = t;
-    t += slots[index];
-    return {
-      id: s.id,
-      index,
-      start,
-      slot: slots[index],
-      outFrames: TRANSITIONS[index]?.frames ?? 0,
-      voStart: start + VO_LEAD,
-      voEnd: start + VO_LEAD + voFrames(s.id),
-    };
-  });
-})();
+export const SCENES: SceneTiming[] = timeline.lines.map((line, index, all) => {
+  const start = index === 0 ? 0 : sec(line.start) - SCENE_LEAD;
+  const next = index + 1 < all.length ? sec(all[index + 1].start) - SCENE_LEAD : TOTAL_FRAMES;
+  return {
+    id: line.id as SceneId,
+    index,
+    start,
+    slot: next - start,
+    outFrames: index + 1 < all.length ? TRANSITIONS[index].frames : 0,
+    voStart: sec(line.start),
+    voEnd: sec(line.end),
+  };
+});
 
 export const sceneById = (id: SceneId) => SCENES.find((s) => s.id === id)!;
 
 // ---------------------------------------------------------------------------
-// Captions: each line's phrases are spread over the measured clip in
-// proportion to their character count (a good proxy for speaking time).
+// Captions: one per script phrase, from where it starts in the take until the
+// next phrase starts (the last phrase of a line ends with the line).
 export type Caption = { text: string; start: number; end: number; sceneId: SceneId };
 
-export const CAPTIONS: Caption[] = SCENES.flatMap((scene) => {
-  const line = voiceover.lines.find((l) => l.id === scene.id);
-  if (!line) return [];
-  const chars = line.captions.map((c) => c.length);
-  const total = chars.reduce((a, b) => a + b, 0);
-  const span = scene.voEnd - scene.voStart;
-  let acc = 0;
-  return line.captions.map((text, i) => {
-    const start = scene.voStart + Math.round((acc / total) * span);
-    acc += chars[i];
-    const end =
-      i === line.captions.length - 1
-        ? Math.min(scene.voEnd + 10, scene.start + scene.slot)
-        : scene.voStart + Math.round((acc / total) * span);
-    return { text, start, end, sceneId: scene.id };
-  });
-});
+export const CAPTIONS: Caption[] = timeline.lines.flatMap((line) =>
+  line.phrases.map((p, i) => ({
+    text: p.text,
+    start: sec(p.start),
+    end: i + 1 < line.phrases.length ? sec(line.phrases[i + 1].start) : sec(line.end) + 10,
+    sceneId: line.id as SceneId,
+  })),
+);
 
 /**
  * Frame (relative to the scene's own start) at which caption phrase `i` of a
@@ -167,19 +102,7 @@ export const cue = (id: SceneId, i: number) => {
 export type Impact = { frame: number; strength: number; sound: "hit" | "boom" };
 
 /** CTA slogan beats: "One agency." / "Every channel." / "Real growth." */
-export const CTA_BEATS = (() => {
-  const cta = sceneById("cta");
-  const start = cta.start + cue("cta", 0);
-  const end = cta.start + cue("cta", 1);
-  const parts = ["One agency. ", "Every channel. ", "Real growth."];
-  const total = parts.join("").length;
-  let acc = 0;
-  return parts.map((t) => {
-    const f = start + Math.round((acc / total) * (end - start));
-    acc += t.length;
-    return f - cta.start;
-  });
-})();
+export const CTA_BEATS = [0, 1, 2].map((i) => cue("cta", i));
 
 export const IMPACTS: Impact[] = ([
   ...SCENES.slice(1).map((s) => ({ frame: s.start, strength: 0.55, sound: "hit" as const })),
@@ -188,6 +111,6 @@ export const IMPACTS: Impact[] = ([
   { frame: sceneById("brand").start + 24, strength: 1, sound: "boom" },
   { frame: sceneById("brand").start + cue("brand", 3) - 2, strength: 0.9, sound: "hit" },
   ...CTA_BEATS.slice(1).map((f) => ({ frame: sceneById("cta").start + f - 2, strength: 0.7, sound: "hit" as const })),
-  // final logo on the white end card
-  { frame: sceneById("cta").start + cue("cta", 1) - 4, strength: 1, sound: "boom" },
+  // final logo on the white end card ("The Leading Link.")
+  { frame: sceneById("cta").start + cue("cta", 3) - 4, strength: 1, sound: "boom" },
 ] as Impact[]).sort((a, b) => a.frame - b.frame);

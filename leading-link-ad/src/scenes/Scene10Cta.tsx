@@ -43,8 +43,8 @@ export const Scene10Cta: React.FC<SceneProps> = ({ duration }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { v, width, height } = useLayout();
-  const logoAt = cue("cta", 1) - 4; // "The Leading Link."
-  const urlAt = cue("cta", 2) - 6; // "Visit theleadinglink.ae"
+  const logoAt = cue("cta", 3) - 4; // "The Leading Link."
+  const urlAt = cue("cta", 4) - 6; // "Visit theleadinglink.ae"
   // icons fly in and get sucked into the center just before the reveal
   const converge = range(frame, logoAt - 20, logoAt);
   // white end card opens as an expanding circle from the center

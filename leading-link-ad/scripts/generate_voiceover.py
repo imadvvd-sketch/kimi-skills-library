@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""Generate one voiceover file per scene into public/audio/vo/ and write
-measured durations to src/content/vo-durations.json.
+"""Generate a voiceover take from the script into public/audio/vo/voiceover.mp3
+(lines joined with short pauses). Then run `npm run align` to time the scenes.
+
+The current video uses a supplied ElevenLabs take (public/audio/vo/source/).
+Only run this if you want to replace it with a generated read.
 
 Engine selection:
   * ELEVENLABS_API_KEY set  -> ElevenLabs API (ELEVENLABS_VOICE_ID optional)
@@ -86,14 +89,26 @@ def main():
     else:
         synth, engine = kokoro_engine()
     print(f"voice engine: {engine}")
-    durations = {}
+    tmp = OUT / "_lines"
+    tmp.mkdir(exist_ok=True)
+    clips = []
     for i, line in enumerate(LINES, 1):
-        dest = OUT / f"{i:02d}-{line['id']}.mp3"
+        dest = tmp / f"{i:02d}-{line['id']}.mp3"
         synth(line["tts"], dest, line["id"])
-        durations[line["id"]] = round(duration(dest), 3)
-        print(f"  {dest.name}: {durations[line['id']]:.2f}s")
-    (ROOT / "src/content/vo-durations.json").write_text(
-        json.dumps({"engine": engine, "seconds": durations}, indent=2) + "\n")
+        clips.append(dest)
+        print(f"  {dest.name}: {duration(dest):.2f}s")
+    # join the lines with 0.35 s pauses into one take
+    gap = tmp / "gap.mp3"
+    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i",
+                           "anullsrc=r=44100:cl=stereo", "-t", "0.35", "-b:a", "192k", str(gap)])
+    listing = tmp / "list.txt"
+    listing.write_text("".join(f"file '{c.name}'\nfile 'gap.mp3'\n" for c in clips))
+    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
+                           "-i", str(listing), "-b:a", "192k", str(OUT / "voiceover.mp3")])
+    for f in tmp.iterdir():
+        f.unlink()
+    tmp.rmdir()
+    print(f"wrote public/audio/vo/voiceover.mp3 ({duration(OUT / 'voiceover.mp3'):.2f}s); now run: npm run align")
 
 
 if __name__ == "__main__":
