@@ -33,6 +33,12 @@ skill-name/
 | [`email-marketing-pro`](skills/email-marketing-pro/) | التسويق البريدي - Campaigns، Automation، Newsletters |
 | [`analytics-reporter`](skills/analytics-reporter/) | تحليل بيانات التسويق - GA4، Search Console، Dashboards |
 
+### مهارات إنتاج الفيديو 🎬
+
+| المهارة | الوصف |
+|---------|-------|
+| [`openmontage-video-producer`](skills/openmontage-video-producer/) | إنتاج فيديو كامل بـ [OpenMontage](https://github.com/calesthio/OpenMontage) - شرح، وثائقي، مقاطع قصيرة، دبلجة، سينمائي |
+
 ### المهارات الأساسية
 
 | المهارة | الوصف |
