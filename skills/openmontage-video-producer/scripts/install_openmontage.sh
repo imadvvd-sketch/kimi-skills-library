@@ -9,6 +9,7 @@ set -euo pipefail
 
 REPO_URL="https://github.com/calesthio/OpenMontage.git"
 TARGET="${1:-OpenMontage}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 need() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -20,7 +21,7 @@ need() {
 echo "==> التحقق من المتطلبات..."
 need git    "ثبّتها من https://git-scm.com"
 need python3 "مطلوب Python 3.10+ من https://www.python.org/downloads/"
-need node   "مطلوب Node.js 18+ من https://nodejs.org"
+need node   "مطلوب Node.js 18+ (ويُفضّل 22+) من https://nodejs.org"
 need npm    "يأتي مع Node.js"
 need ffmpeg "macOS: brew install ffmpeg | Ubuntu: sudo apt install ffmpeg"
 
@@ -34,6 +35,9 @@ NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
 if [ "$NODE_MAJOR" -lt 18 ]; then
   echo "✗ مطلوب Node.js 18+ (الموجود $(node -v))" >&2
   exit 1
+fi
+if [ "$NODE_MAJOR" -lt 22 ]; then
+  echo "⚠ Node.js $(node -v): يكفي لـ Remotion، لكن محرك HyperFrames يتطلب Node.js 22+" >&2
 fi
 
 if [ -d "$TARGET/.git" ]; then
@@ -61,9 +65,16 @@ else
 fi
 
 echo ""
+echo "==> تنزيل صوت Piper للتعليق الصوتي المجاني (en_US-lessac-medium)..."
+# أداة piper_tts في OpenMontage تبحث عن نموذج الصوت في جذر المشروع
+.venv/bin/python -m piper.download_voices en_US-lessac-medium \
+  || echo "  [تخطّي] تعذّر تنزيل صوت Piper — نفّذ لاحقاً: .venv/bin/python -m piper.download_voices en_US-lessac-medium"
+
+echo ""
 echo "✓ تم تثبيت OpenMontage في: $(pwd)"
 echo ""
 echo "الخطوات التالية:"
+echo "  0. تحقّق من التثبيت: bash $SCRIPT_DIR/verify_openmontage.sh $(pwd)"
 echo "  1. (اختياري) أضف مفاتيح API في الملف .env — كلها اختيارية"
 echo "  2. افتح المجلد في وكيل برمجي (Claude Code / Cursor / Codex / Kimi CLI)"
 echo "  3. اطلب مثلاً: \"Make a 60-second animated explainer about how neural networks learn\""

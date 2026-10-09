@@ -31,7 +31,7 @@ description: "إنتاج فيديوهات كاملة باستخدام OpenMontag
 ### المتطلبات
 - Python 3.10+
 - FFmpeg
-- Node.js 18+
+- Node.js 18+ (يُفضّل **22+** — محرك HyperFrames يتطلبه)
 - وكيل برمجي: Claude Code أو Cursor أو Codex أو Copilot أو Kimi CLI
 
 ### التثبيت التلقائي (موصى به)
@@ -56,7 +56,19 @@ python -m pip install -r requirements.txt
 cd remotion-composer && npm install && cd ..
 python -m pip install piper-tts
 cp .env.example .env
+python -m piper.download_voices en_US-lessac-medium   # صوت التعليق المجاني
 ```
+
+> **صوت عربي مجاني:** `python -m piper.download_voices ar_JO-kareem-medium` ثم اطلب من الوكيل استخدام النموذج `ar_JO-kareem-medium`.
+
+### التحقق من التثبيت
+
+```bash
+bash scripts/verify_openmontage.sh ~/OpenMontage
+```
+
+يفحص FFmpeg وNode وبيئة Python وRemotion وPiper ونموذج الصوت وسجل الأدوات، ثم يطبع النتيجة.
+للفحص الشامل من داخل مجلد المشروع: `make preflight` و`make hyperframes-doctor` و`make demo` (فيديو تجريبي بلا مفاتيح).
 
 ### مفاتيح API (كلها اختيارية)
 
