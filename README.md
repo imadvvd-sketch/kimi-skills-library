@@ -50,6 +50,7 @@ skill-name/
 | [`social-media-manager`](skills/social-media-manager/) | إدارة حسابات التواصل الاجتماعي وإنشاء المحتوى |
 | [`pdf-reports`](skills/pdf-reports/) | إنشاء تقارير PDF احترافية |
 | [`excel-automation`](skills/excel-automation/) | أتمتة مهام Excel والجداول الحسابية |
+| [`xilo-opus-video`](skills/xilo-opus-video/) | صناعة فيديوهات بالكود (Canvas، WebGL، Three.js، Remotion، Manim) مع موسيقى مولّدة، عبر 3 خطط ومعاينات قبل التنفيذ — المصدر: [Kianzzz/xilo-opus-video](https://github.com/Kianzzz/xilo-opus-video) (MIT) |
 
 ## كيفية الاستخدام 🚀
 
