@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: apps/lumalab-android
@@ -37,3 +39,27 @@ jobs:
           name: lumalab-apks
           path: apps/lumalab-android/app/build/outputs/apk/**/*.apk
           if-no-files-found: error
+
+      - name: Collect APKs for download
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/LumaLab-debug.apk
+          cp app/build/outputs/apk/release/app-release.apk dist/LumaLab-release.apk
+
+      # Publishes a direct, phone-friendly download link (no GitHub login or zip needed).
+      - name: Publish latest build as a pre-release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: lumalab-latest
+          name: LumaLab (latest build)
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          body: |
+            Latest LumaLab build from `${{ github.ref_name }}` (${{ github.sha }}).
+            Install `LumaLab-debug.apk` on Android 10+ (allow installing from unknown sources).
+          files: |
+            apps/lumalab-android/dist/LumaLab-debug.apk
+            apps/lumalab-android/dist/LumaLab-release.apk
+          overwrite_files: true
