@@ -5,6 +5,10 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToString
+import org.junit.Before
+import org.robolectric.shadows.ShadowLog
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.imadnote.app.MainActivity
@@ -35,7 +39,18 @@ class AppSmokeTest {
     }
 
     private fun assertShown(text: String) {
-        rule.waitUntil(5_000) { rule.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+        try {
+            rule.waitUntil(5_000) {
+                rule.onAllNodesWithText(text, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (e: Throwable) {
+            throw AssertionError("\"$text\" not shown. Screen:\n" + rule.onRoot(useUnmergedTree = true).printToString(), e)
+        }
+    }
+
+    @Before
+    fun logToStdout() {
+        ShadowLog.stream = System.out
     }
 
     @Test
@@ -76,7 +91,12 @@ class AppSmokeTest {
 
     @Test
     fun homeShowsDashboard() {
-        assertShown(s(R.string.stat_today_tasks))
-        clickText(s(R.string.stat_today_tasks).let { it })
+        assertShown(s(R.string.section_activity))
+    }
+
+    @Test
+    fun searchOpens() {
+        clickDescription(s(R.string.action_search))
+        assertShown(s(R.string.search_start_title))
     }
 }

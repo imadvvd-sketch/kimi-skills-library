@@ -62,8 +62,9 @@ fun QuickCaptureSheet(
     val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var text by rememberSaveable { mutableStateOf("") }
     val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) { focus.requestFocus() }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheet, shape = Radius.xl) {
+        // The sheet content lives in its own window; request focus only once the field is attached.
+        LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
         Column(
             Modifier
                 .navigationBarsPadding()
