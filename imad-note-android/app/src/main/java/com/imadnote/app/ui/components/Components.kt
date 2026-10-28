@@ -384,7 +384,7 @@ fun priorityName(priority: Int): String = stringResource(
 
 /** Rounded-square check tinted by priority inside a 48 dp target; done = filled success. */
 @Composable
-fun TaskCheck(checked: Boolean, priority: Int, onToggle: () -> Unit, taskTitle: String? = null) {
+fun TaskCheck(checked: Boolean, priority: Int, taskTitle: String? = null, onToggle: () -> Unit) {
     val tint = priorityColor(priority)
     val label = when {
         taskTitle == null -> stringResource(if (checked) R.string.cd_mark_not_done else R.string.cd_mark_done)
@@ -416,7 +416,7 @@ fun TaskRow(
             .padding(end = Spacing.md, top = Spacing.xs, bottom = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TaskCheck(task.isCompleted, task.priority, onToggle, taskTitle = task.title)
+        TaskCheck(task.isCompleted, task.priority, taskTitle = task.title, onToggle = onToggle)
         Column(Modifier.weight(1f)) {
             Text(
                 task.title,

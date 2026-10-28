@@ -256,7 +256,7 @@ private fun AgendaCard(task: TaskEntity, projectColorIndex: Int?, onToggle: () -
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            TaskCheck(task.isCompleted, task.priority, onToggle, taskTitle = task.title)
+            TaskCheck(task.isCompleted, task.priority, taskTitle = task.title, onToggle = onToggle)
         }
     }
 }
