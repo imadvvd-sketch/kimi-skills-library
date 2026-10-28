@@ -39,6 +39,15 @@ android {
     }
     testOptions {
         unitTests.isReturnDefaultValues = true
+        // Robolectric UI smoke tests need merged resources and assets.
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            it.testLogging {
+                events("failed")
+                exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                showStackTraces = true
+            }
+        }
     }
 }
 
@@ -67,5 +76,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.13")
+    testImplementation("androidx.test.ext:junit:1.2.1")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 }
