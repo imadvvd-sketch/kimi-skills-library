@@ -47,9 +47,23 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imadnote.app.BuildConfigInfo
+import com.imadnote.app.AppLocale
+import android.app.Activity
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.imadnote.app.ui.theme.Radius
 import com.imadnote.app.R
 import com.imadnote.app.data.HomeSection
 import com.imadnote.app.data.ThemeMode
+import com.imadnote.app.data.TextSize
+import com.imadnote.app.data.NotesLayout
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.TopAppBarDefaults
 import com.imadnote.app.data.UserPreferences
 import com.imadnote.app.reminders.Notifications
 import com.imadnote.app.ui.LocalAppContainer
@@ -76,6 +90,7 @@ fun SettingsScreen(onBack: () -> Unit, onArchive: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.settings)) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 navigationIcon = {
                     IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back)) }
                 },
@@ -83,26 +98,75 @@ fun SettingsScreen(onBack: () -> Unit, onArchive: () -> Unit) {
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
+            Header(stringResource(R.string.settings_profile))
+            var name by rememberSaveable(prefs.displayName) { mutableStateOf(prefs.displayName) }
+            OutlinedTextField(
+                value = name,
+                onValueChange = {
+                    name = it
+                    scope.launch { container.settings.setDisplayName(it) }
+                },
+                label = { Text(stringResource(R.string.settings_name)) },
+                supportingText = { Text(stringResource(R.string.settings_name_hint)) },
+                singleLine = true,
+                shape = Radius.md,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg),
+            )
+
+            Divider()
+            Header(stringResource(R.string.settings_language))
+            val current = remember(refresh) { AppLocale.get(context) }
+            AppLocale.Language.entries.forEach { lang ->
+                RadioRow(
+                    label = stringResource(
+                        when (lang) {
+                            AppLocale.Language.SYSTEM -> R.string.language_system
+                            AppLocale.Language.ARABIC -> R.string.language_arabic
+                            AppLocale.Language.ENGLISH -> R.string.language_english
+                        },
+                    ),
+                    selected = current == lang,
+                    onClick = {
+                        if (current != lang) {
+                            AppLocale.set(context, lang)
+                            (context as? Activity)?.recreate()
+                        }
+                    },
+                )
+            }
+
+            Divider()
             Header(stringResource(R.string.settings_appearance))
+            SubHeader(stringResource(R.string.settings_theme))
             ThemeMode.entries.forEach { mode ->
-                Row(
-                    Modifier.fillMaxWidth().clickable(role = Role.RadioButton) {
-                        scope.launch { container.settings.setThemeMode(mode) }
-                    }.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RadioButton(selected = prefs.themeMode == mode, onClick = null)
-                    Spacer(Modifier.width(Spacing.md))
-                    Text(
-                        stringResource(
-                            when (mode) {
-                                ThemeMode.SYSTEM -> R.string.theme_system
-                                ThemeMode.LIGHT -> R.string.theme_light
-                                ThemeMode.DARK -> R.string.theme_dark
-                            },
-                        ),
-                    )
-                }
+                RadioRow(
+                    label = stringResource(
+                        when (mode) {
+                            ThemeMode.SYSTEM -> R.string.theme_system
+                            ThemeMode.LIGHT -> R.string.theme_light
+                            ThemeMode.DARK -> R.string.theme_dark
+                        },
+                    ),
+                    selected = prefs.themeMode == mode,
+                    onClick = { scope.launch { container.settings.setThemeMode(mode) } },
+                )
+            }
+            SubHeader(stringResource(R.string.settings_text_size))
+            TextSize.entries.forEach { size ->
+                RadioRow(
+                    label = stringResource(if (size == TextSize.STANDARD) R.string.text_size_standard else R.string.text_size_large),
+                    selected = prefs.textSize == size,
+                    onClick = { scope.launch { container.settings.setTextSize(size) } },
+                )
+            }
+            SubHeader(stringResource(R.string.settings_notes_layout))
+            NotesLayout.entries.forEach { layout ->
+                RadioRow(
+                    label = stringResource(if (layout == NotesLayout.GRID) R.string.layout_grid else R.string.layout_list),
+                    selected = prefs.notesLayout == layout,
+                    onClick = { scope.launch { container.settings.setNotesLayout(layout) } },
+                )
             }
 
             Divider()
@@ -110,8 +174,8 @@ fun SettingsScreen(onBack: () -> Unit, onArchive: () -> Unit) {
             HomeSection.entries.forEach { section ->
                 val visible = section !in prefs.hiddenSections
                 Row(
-                    Modifier.fillMaxWidth().clickable(role = Role.Switch) {
-                        scope.launch { container.settings.setSectionVisible(section, !visible) }
+                    Modifier.fillMaxWidth().heightIn(min = Spacing.minTouchTarget).toggleable(value = visible, role = Role.Switch) {
+                        scope.launch { container.settings.setSectionVisible(section, it) }
                     }.padding(horizontal = Spacing.lg, vertical = Spacing.xs),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -179,10 +243,8 @@ fun SettingsScreen(onBack: () -> Unit, onArchive: () -> Unit) {
 private fun sectionLabel(s: HomeSection): Int = when (s) {
     HomeSection.OVERDUE -> R.string.section_overdue
     HomeSection.TODAY -> R.string.section_today
-    HomeSection.UPCOMING -> R.string.section_upcoming
     HomeSection.PINNED -> R.string.section_pinned
-    HomeSection.RECENT -> R.string.section_recent_notes
-    HomeSection.PROJECTS -> R.string.section_active_projects
+    HomeSection.ACTIVITY -> R.string.section_activity
 }
 
 @Composable
@@ -193,6 +255,32 @@ private fun Header(text: String) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.lg, bottom = Spacing.sm),
     )
+}
+
+@Composable
+private fun SubHeader(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.md, bottom = Spacing.xs),
+    )
+}
+
+@Composable
+private fun RadioRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = Spacing.minTouchTarget)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(horizontal = Spacing.lg),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Spacer(Modifier.width(Spacing.md))
+        Text(label, style = MaterialTheme.typography.bodyLarge)
+    }
 }
 
 @Composable

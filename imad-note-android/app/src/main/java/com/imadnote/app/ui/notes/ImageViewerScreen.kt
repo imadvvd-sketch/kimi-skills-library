@@ -13,7 +13,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.ImageNotSupported
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +47,7 @@ import com.imadnote.app.ui.appViewModel
 import com.imadnote.app.ui.components.AttachmentImage
 import com.imadnote.app.ui.components.ConfirmDialog
 import com.imadnote.app.ui.components.EmptyState
+import com.imadnote.app.ui.components.Illustration
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -96,7 +96,7 @@ fun ImageViewerScreen(onBack: () -> Unit) {
         if (images == null) return@Scaffold
         if (images.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                EmptyState(Icons.Outlined.ImageNotSupported, stringResource(R.string.no_images), "")
+                EmptyState(Illustration.NOTES, stringResource(R.string.no_images), "")
             }
             return@Scaffold
         }

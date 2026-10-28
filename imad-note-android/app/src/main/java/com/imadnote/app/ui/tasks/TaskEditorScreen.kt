@@ -44,6 +44,10 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.navigationBarsPadding
+import com.imadnote.app.ui.components.PrimaryButton
+import com.imadnote.app.ui.components.contentWidth
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -135,6 +139,7 @@ class TaskEditorViewModel(private val c: AppContainer, handle: SavedStateHandle)
         val presetProject: String? = handle.get<String>("projectId")?.takeIf { it.isNotEmpty() }
         val presetNote: String? = handle.get<String>("noteId")?.takeIf { it.isNotEmpty() }
         val presetToday = handle.get<Boolean>("today") ?: false
+        val presetDate = handle.get<String>("date")?.takeIf { it.isNotEmpty() }?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
         viewModelScope.launch {
             val existing = c.tasks.get(taskId)
             if (existing == null) {
@@ -142,7 +147,7 @@ class TaskEditorViewModel(private val c: AppContainer, handle: SavedStateHandle)
                     loaded = true,
                     projectId = presetProject,
                     noteId = presetNote,
-                    dueDate = if (presetToday) LocalDate.now() else null,
+                    dueDate = presetDate ?: if (presetToday) LocalDate.now() else null,
                 )
                 return@launch
             }
@@ -273,6 +278,16 @@ fun TaskEditorScreen(onBack: () -> Unit, onOpenNote: (String) -> Unit) {
     }
 
     Scaffold(
+        bottomBar = {
+            Surface(color = MaterialTheme.colorScheme.background) {
+                PrimaryButton(
+                    text = stringResource(R.string.action_save),
+                    onClick = { vm.saveNow(onBack) },
+                    enabled = state.title.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth().navigationBarsPadding().imePadding().padding(Spacing.lg),
+                )
+            }
+        },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(if (state.exists) R.string.edit_task else R.string.new_task)) },
@@ -300,8 +315,8 @@ fun TaskEditorScreen(onBack: () -> Unit, onOpenNote: (String) -> Unit) {
             Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .imePadding()
                 .verticalScroll(rememberScrollState())
+                .contentWidth()
                 .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

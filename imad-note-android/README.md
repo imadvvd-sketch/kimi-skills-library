@@ -1,8 +1,9 @@
-# Imad Note (Android)
+# Imad-note 2 (Android)
 
 Offline-first notes, tasks and projects in one calm workspace.
 
 - **Stack:** Kotlin, Jetpack Compose (Material 3), Room, DataStore, Coil, Navigation Compose.
+- **Design system:** see [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md).
 - **Min SDK** 26 (Android 8.0), **target/compile SDK** 34.
 - **Languages:** English and Arabic (RTL handled by Compose).
 

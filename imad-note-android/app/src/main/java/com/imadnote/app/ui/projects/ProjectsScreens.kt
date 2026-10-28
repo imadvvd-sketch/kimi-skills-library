@@ -45,6 +45,8 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -77,6 +79,14 @@ import com.imadnote.app.ui.components.ColorSwatches
 import com.imadnote.app.ui.components.ConfirmDialog
 import com.imadnote.app.ui.components.DatePickerModal
 import com.imadnote.app.ui.components.EmptyState
+import com.imadnote.app.ui.components.Illustration
+import com.imadnote.app.ui.components.PrimaryButton
+import com.imadnote.app.ui.components.QuietButton
+import com.imadnote.app.ui.components.TaskActions
+import com.imadnote.app.ui.components.contentWidth
+import com.imadnote.app.ui.components.rememberTaskToggle
+import com.imadnote.app.ui.components.LocalFeedback
+import androidx.compose.material3.TopAppBarDefaults
 import com.imadnote.app.ui.components.InfoText
 import com.imadnote.app.ui.components.LoadingState
 import com.imadnote.app.ui.components.NoteCard
@@ -110,16 +120,19 @@ class ProjectsViewModel(c: AppContainer) : ViewModel() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProjectsScreen(onOpenProject: (String) -> Unit, onNewProject: () -> Unit, onSearch: () -> Unit) {
+fun ProjectsScreen(onBack: () -> Unit, onOpenProject: (String) -> Unit, onNewProject: () -> Unit, onSearch: () -> Unit) {
     val vm = appViewModel { c, _ -> ProjectsViewModel(c) }
     val active by vm.active.collectAsStateWithLifecycle()
     val archived by vm.archived.collectAsStateWithLifecycle()
     var showArchived by rememberSaveable { mutableStateOf(false) }
     Scaffold(
-        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_projects)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back)) }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 actions = {
                     IconButton(onClick = onSearch) { Icon(Icons.Outlined.Search, stringResource(R.string.action_search)) }
                     IconButton(onClick = onNewProject) { Icon(Icons.Outlined.CreateNewFolder, stringResource(R.string.new_project)) }
@@ -133,8 +146,8 @@ fun ProjectsScreen(onOpenProject: (String) -> Unit, onNewProject: () -> Unit, on
             return@Scaffold
         }
         LazyColumn(
-            Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(start = Spacing.lg, end = Spacing.lg, top = Spacing.sm, bottom = Spacing.fabClearance),
+            Modifier.fillMaxSize().padding(padding).contentWidth(),
+            contentPadding = PaddingValues(start = Spacing.lg, end = Spacing.lg, top = Spacing.xs, bottom = Spacing.fabClearance),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             item("filters") {
@@ -145,18 +158,13 @@ fun ProjectsScreen(onOpenProject: (String) -> Unit, onNewProject: () -> Unit, on
             }
             if (list.isEmpty()) {
                 item("empty") {
-                    Column {
-                        EmptyState(
-                            Icons.Outlined.CreateNewFolder,
-                            stringResource(if (showArchived) R.string.projects_archived_empty else R.string.projects_empty_title),
-                            stringResource(R.string.projects_empty_body),
-                        )
-                        if (!showArchived) {
-                            TextButton(onClick = onNewProject, modifier = Modifier.fillMaxWidth()) {
-                                Text(stringResource(R.string.new_project))
-                            }
-                        }
-                    }
+                    EmptyState(
+                        Illustration.PROJECTS,
+                        stringResource(if (showArchived) R.string.projects_archived_empty else R.string.projects_empty_title),
+                        stringResource(R.string.projects_empty_body),
+                        actionLabel = if (showArchived) null else stringResource(R.string.new_project),
+                        onAction = onNewProject,
+                    )
                 }
             }
             items(list, key = { it.project.id }) { p ->
@@ -178,9 +186,7 @@ class ProjectDetailViewModel(private val c: AppContainer, handle: SavedStateHand
     val notes = c.notes.observeByProject(projectId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun toggle(task: TaskEntity) {
-        viewModelScope.launch { c.tasks.toggleComplete(task) }
-    }
+    val taskActions = TaskActions(c.tasks, viewModelScope)
 
     fun setArchived(archived: Boolean) {
         viewModelScope.launch { c.projects.setArchived(projectId, archived) }
@@ -210,6 +216,9 @@ fun ProjectDetailScreen(
     val tasks by vm.tasks.collectAsStateWithLifecycle()
     val notes by vm.notes.collectAsStateWithLifecycle()
     val container = LocalAppContainer.current
+    val toggle = rememberTaskToggle(vm.taskActions)
+    val feedback = LocalFeedback.current
+    val deletedMsg = stringResource(R.string.project_deleted)
     var menu by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
 
@@ -249,7 +258,7 @@ fun ProjectDetailScreen(
         }
         val images = notes.flatMap { n -> n.sortedAttachments.mapIndexed { i, a -> Triple(n.note.id, i, a) } }
         LazyColumn(
-            Modifier.fillMaxSize().padding(padding),
+            Modifier.fillMaxSize().padding(padding).contentWidth(),
             contentPadding = PaddingValues(start = Spacing.lg, end = Spacing.lg, bottom = Spacing.xxl),
         ) {
             item("header") {
@@ -271,24 +280,16 @@ fun ProjectDetailScreen(
             }
             item("tasks-h") {
                 SectionHeader(stringResource(R.string.tab_tasks), count = tasks.size) {
-                    TextButton(onClick = { onNewTask(vm.projectId) }) {
-                        Icon(Icons.Outlined.Add, null, Modifier.size(18.dp))
-                        Spacer(Modifier.width(Spacing.xs))
-                        Text(stringResource(R.string.action_add))
-                    }
+                    QuietButton(stringResource(R.string.action_add), onClick = { onNewTask(vm.projectId) }, icon = Icons.Outlined.Add)
                 }
             }
             if (tasks.isEmpty()) item("tasks-empty") { InfoText(stringResource(R.string.project_no_tasks)) }
             items(tasks, key = { "t" + it.id }) { t ->
-                TaskRow(t, onToggle = { vm.toggle(t) }, onClick = { onOpenTask(t.id) })
+                TaskRow(t, onToggle = { toggle(t) }, onClick = { onOpenTask(t.id) })
             }
             item("notes-h") {
                 SectionHeader(stringResource(R.string.tab_notes), count = notes.size) {
-                    TextButton(onClick = { onNewNote(vm.projectId) }) {
-                        Icon(Icons.Outlined.Add, null, Modifier.size(18.dp))
-                        Spacer(Modifier.width(Spacing.xs))
-                        Text(stringResource(R.string.action_add))
-                    }
+                    QuietButton(stringResource(R.string.action_add), onClick = { onNewNote(vm.projectId) }, icon = Icons.Outlined.Add)
                 }
             }
             if (notes.isEmpty()) item("notes-empty") { InfoText(stringResource(R.string.project_no_notes)) }
@@ -315,7 +316,12 @@ fun ProjectDetailScreen(
             title = stringResource(R.string.delete_project_title),
             text = stringResource(R.string.delete_project_body),
             confirmLabel = stringResource(R.string.action_delete),
-            onConfirm = { vm.delete(onBack) },
+            onConfirm = {
+                vm.delete {
+                    onBack()
+                    feedback.show(deletedMsg)
+                }
+            },
             onDismiss = { confirmDelete = false },
         )
     }
@@ -402,13 +408,23 @@ fun ProjectEditScreen(onBack: () -> Unit, onSaved: (id: String, isNew: Boolean) 
                 },
             )
         },
+        bottomBar = {
+            Surface(color = MaterialTheme.colorScheme.background) {
+                PrimaryButton(
+                    text = stringResource(R.string.action_save),
+                    onClick = { vm.save { id -> onSaved(id, !form.exists) } },
+                    enabled = form.name.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth().navigationBarsPadding().imePadding().padding(Spacing.lg),
+                )
+            }
+        },
     ) { padding ->
         if (!form.loaded) {
             LoadingState(Modifier.padding(padding))
             return@Scaffold
         }
         Column(
-            Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(Spacing.lg),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).contentWidth().padding(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         ) {
             OutlinedTextField(

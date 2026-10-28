@@ -1,18 +1,46 @@
 package com.imadnote.app.ui.navigation
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.unit.dp
+import com.imadnote.app.ui.LocalAppContainer
+import com.imadnote.app.ui.components.Feedback
+import com.imadnote.app.ui.components.LocalFeedback
+import com.imadnote.app.ui.theme.Elevation
+import com.imadnote.app.ui.theme.Motion
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
+import com.imadnote.app.ui.more.MoreScreen
+import com.imadnote.app.ui.calendar.CalendarScreen
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -57,8 +85,10 @@ object Routes {
     const val TASKS = "tasks"
     const val NOTES = "notes"
     const val PROJECTS = "projects"
+    const val MORE = "more"
+    const val CALENDAR = "calendar"
     const val NOTE = "note/{id}?mode={mode}&projectId={projectId}"
-    const val TASK = "task/{id}?projectId={projectId}&noteId={noteId}&today={today}"
+    const val TASK = "task/{id}?projectId={projectId}&noteId={noteId}&today={today}&date={date}"
     const val PROJECT = "project/{id}"
     const val PROJECT_EDIT = "project-edit/{id}"
     const val VIEWER = "viewer/{noteId}/{index}"
@@ -67,8 +97,8 @@ object Routes {
     const val ARCHIVE = "archive"
 
     fun note(id: String = "new", mode: String = "", projectId: String = "") = "note/$id?mode=$mode&projectId=$projectId"
-    fun task(id: String = "new", projectId: String = "", noteId: String = "", today: Boolean = false) =
-        "task/$id?projectId=$projectId&noteId=$noteId&today=$today"
+    fun task(id: String = "new", projectId: String = "", noteId: String = "", today: Boolean = false, date: String = "") =
+        "task/$id?projectId=$projectId&noteId=$noteId&today=$today&date=$date"
     fun project(id: String) = "project/$id"
     fun projectEdit(id: String = "new") = "project-edit/$id"
     fun viewer(noteId: String, index: Int) = "viewer/$noteId/$index"
@@ -78,9 +108,9 @@ private data class TopLevel(val route: String, val label: Int, val icon: ImageVe
 
 private val topLevel = listOf(
     TopLevel(Routes.HOME, R.string.tab_home, Icons.Outlined.Home, Icons.Filled.Home),
-    TopLevel(Routes.TASKS, R.string.tab_tasks, Icons.Outlined.CheckCircle, Icons.Filled.CheckCircle),
     TopLevel(Routes.NOTES, R.string.tab_notes, Icons.AutoMirrored.Outlined.StickyNote2, Icons.AutoMirrored.Filled.StickyNote2),
-    TopLevel(Routes.PROJECTS, R.string.tab_projects, Icons.Outlined.Folder, Icons.Filled.Folder),
+    TopLevel(Routes.TASKS, R.string.tab_tasks, Icons.Outlined.CheckCircle, Icons.Filled.CheckCircle),
+    TopLevel(Routes.MORE, R.string.tab_more, Icons.Outlined.Menu, Icons.Filled.Menu),
 )
 
 private fun NavHostController.switchTab(route: String) = navigate(route) {
@@ -89,47 +119,94 @@ private fun NavHostController.switchTab(route: String) = navigate(route) {
     restoreState = true
 }
 
+private val topLevelRoutes = topLevel.map { it.route }.toSet()
+
+private fun isTopLevelRoute(route: String?) = route in topLevelRoutes
+
+/**
+ * [pendingRoute] is a destination requested from outside the UI (reminder notification, launcher
+ * shortcut). [quickCaptureRequested] opens the capture sheet.
+ */
 @Composable
-fun ImadNoteRoot(pendingTaskId: String?, onPendingTaskHandled: () -> Unit) {
+fun ImadNoteRoot(pendingRoute: String?, onPendingRouteHandled: () -> Unit) {
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
-    val isTopLevel = topLevel.any { it.route == currentRoute }
+    val isTopLevel = isTopLevelRoute(currentRoute)
     var showCapture by rememberSaveable { mutableStateOf(false) }
+    val snackbarHost = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val feedback = remember(snackbarHost, scope) { Feedback(snackbarHost, scope) }
+    val container = LocalAppContainer.current
+    val noteSaved = stringResource(R.string.note_saved)
+    val taskSaved = stringResource(R.string.task_saved)
+    val openLabel = stringResource(R.string.action_open)
 
-    LaunchedEffect(pendingTaskId) {
-        if (pendingTaskId != null) {
-            nav.navigate(Routes.task(pendingTaskId))
-            onPendingTaskHandled()
+    LaunchedEffect(pendingRoute) {
+        when (pendingRoute) {
+            null -> Unit
+            QUICK_CAPTURE -> showCapture = true
+            else -> nav.navigate(pendingRoute)
         }
+        if (pendingRoute != null) onPendingRouteHandled()
     }
 
+    CompositionLocalProvider(LocalFeedback provides feedback) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
+        snackbarHost = {
+            SnackbarHost(snackbarHost, modifier = if (isTopLevel) Modifier else Modifier.navigationBarsPadding().imePadding())
+        },
         bottomBar = {
             if (isTopLevel) {
-                NavigationBar {
-                    topLevel.forEach { item ->
-                        val selected = currentRoute == item.route
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = { nav.switchTab(item.route) },
-                            icon = { Icon(if (selected) item.selectedIcon else item.icon, contentDescription = null) },
-                            label = { Text(stringResource(item.label)) },
-                        )
+                Column {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
+                        topLevel.forEachIndexed { index, item ->
+                            // Quick Capture sits in the middle of the bar, within thumb reach.
+                            if (index == 2) {
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                    CaptureButton(onClick = { showCapture = true })
+                                }
+                            }
+                            val selected = currentRoute == item.route
+                            NavigationBarItem(
+                                selected = selected,
+                                onClick = { nav.switchTab(item.route) },
+                                icon = { Icon(if (selected) item.selectedIcon else item.icon, contentDescription = null) },
+                                label = { Text(stringResource(item.label), maxLines = 1) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                                ),
+                            )
+                        }
                     }
                 }
             }
         },
-        floatingActionButton = {
-            if (isTopLevel) {
-                FloatingActionButton(onClick = { showCapture = true }) {
-                    Icon(Icons.Filled.Add, stringResource(R.string.quick_capture))
-                }
-            }
-        },
     ) { padding ->
-        NavHost(nav, startDestination = Routes.HOME, modifier = Modifier.padding(padding)) {
+        NavHost(
+            nav,
+            startDestination = Routes.HOME,
+            modifier = Modifier.padding(padding),
+            // Tabs cross-fade; screens pushed on top slide in slightly from the reading direction.
+            enterTransition = {
+                if (isTopLevelRoute(initialState.destination.route) && isTopLevelRoute(targetState.destination.route)) {
+                    fadeIn(tween(Motion.STANDARD))
+                } else {
+                    fadeIn(tween(Motion.SCREEN, easing = Motion.EmphasizedDecelerate)) +
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(Motion.SCREEN, easing = Motion.EmphasizedDecelerate)) { it / 16 }
+                }
+            },
+            exitTransition = { fadeOut(tween(Motion.FAST)) },
+            popEnterTransition = { fadeIn(tween(Motion.STANDARD)) },
+            popExitTransition = {
+                fadeOut(tween(Motion.STANDARD, easing = Motion.EmphasizedAccelerate)) +
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(Motion.STANDARD, easing = Motion.EmphasizedAccelerate)) { it / 16 }
+            },
+        ) {
             composable(Routes.HOME) {
                 HomeScreen(
                     onOpenTask = { nav.navigate(Routes.task(it)) },
@@ -137,23 +214,46 @@ fun ImadNoteRoot(pendingTaskId: String?, onPendingTaskHandled: () -> Unit) {
                     onOpenProject = { nav.navigate(Routes.project(it)) },
                     onSeeTasks = { nav.switchTab(Routes.TASKS) },
                     onSeeNotes = { nav.switchTab(Routes.NOTES) },
-                    onSeeProjects = { nav.switchTab(Routes.PROJECTS) },
+                    onSeeProjects = { nav.navigate(Routes.PROJECTS) },
+                    onCalendar = { nav.navigate(Routes.CALENDAR) },
                     onSearch = { nav.navigate(Routes.SEARCH) },
                     onSettings = { nav.navigate(Routes.SETTINGS) },
                 )
             }
             composable(Routes.TASKS) {
-                TasksScreen(onOpenTask = { nav.navigate(Routes.task(it)) }, onSearch = { nav.navigate(Routes.SEARCH) })
+                TasksScreen(
+                    onOpenTask = { nav.navigate(Routes.task(it)) },
+                    onNewTask = { nav.navigate(Routes.task(today = true)) },
+                    onCalendar = { nav.navigate(Routes.CALENDAR) },
+                )
+            }
+            composable(Routes.MORE) {
+                MoreScreen(
+                    onProjects = { nav.navigate(Routes.PROJECTS) },
+                    onCalendar = { nav.navigate(Routes.CALENDAR) },
+                    onArchive = { nav.navigate(Routes.ARCHIVE) },
+                    onSearch = { nav.navigate(Routes.SEARCH) },
+                    onSettings = { nav.navigate(Routes.SETTINGS) },
+                )
+            }
+            composable(Routes.CALENDAR) {
+                CalendarScreen(
+                    onBack = { nav.popBackStack() },
+                    onOpenTask = { nav.navigate(Routes.task(it)) },
+                    onNewTask = { date -> nav.navigate(Routes.task(date = date)) },
+                )
             }
             composable(Routes.NOTES) {
                 NotesScreen(
                     onOpenNote = { nav.navigate(Routes.note(it)) },
+                    onNewNote = { nav.navigate(Routes.note()) },
                     onSearch = { nav.navigate(Routes.SEARCH) },
                     onArchive = { nav.navigate(Routes.ARCHIVE) },
                 )
             }
             composable(Routes.PROJECTS) {
                 ProjectsScreen(
+                    onBack = { nav.popBackStack() },
                     onOpenProject = { nav.navigate(Routes.project(it)) },
                     onNewProject = { nav.navigate(Routes.projectEdit()) },
                     onSearch = { nav.navigate(Routes.SEARCH) },
@@ -181,6 +281,7 @@ fun ImadNoteRoot(pendingTaskId: String?, onPendingTaskHandled: () -> Unit) {
                     navArgument("projectId") { type = NavType.StringType; defaultValue = "" },
                     navArgument("noteId") { type = NavType.StringType; defaultValue = "" },
                     navArgument("today") { type = NavType.BoolType; defaultValue = false },
+                    navArgument("date") { type = NavType.StringType; defaultValue = "" },
                 ),
             ) {
                 TaskEditorScreen(onBack = { nav.popBackStack() }, onOpenNote = { nav.navigate(Routes.note(it)) })
@@ -230,10 +331,20 @@ fun ImadNoteRoot(pendingTaskId: String?, onPendingTaskHandled: () -> Unit) {
             }
         }
     }
+    }
 
     if (showCapture) {
         QuickCaptureSheet(
             onDismiss = { showCapture = false },
+            onQuickSave = { text, asTask ->
+                showCapture = false
+                scope.launch {
+                    val id = if (asTask) container.quickCapture.saveTask(text) else container.quickCapture.saveNote(text)
+                    feedback.show(if (asTask) taskSaved else noteSaved, openLabel) {
+                        nav.navigate(if (asTask) Routes.task(id) else Routes.note(id))
+                    }
+                }
+            },
             onPick = { type ->
                 showCapture = false
                 val route = when (type) {
@@ -246,5 +357,24 @@ fun ImadNoteRoot(pendingTaskId: String?, onPendingTaskHandled: () -> Unit) {
                 nav.navigate(route)
             },
         )
+    }
+}
+
+const val QUICK_CAPTURE = "quick-capture"
+
+/** Raised circular Quick Capture button embedded in the navigation bar. */
+@Composable
+private fun CaptureButton(onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        shadowElevation = Elevation.float,
+        modifier = Modifier.size(52.dp),
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(Icons.Filled.Add, stringResource(R.string.quick_capture), modifier = Modifier.size(28.dp))
+        }
     }
 }

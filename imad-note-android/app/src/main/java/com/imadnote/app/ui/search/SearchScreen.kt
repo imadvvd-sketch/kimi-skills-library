@@ -15,8 +15,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -46,6 +44,10 @@ import com.imadnote.app.data.TaskEntity
 import com.imadnote.app.ui.LocalAppContainer
 import com.imadnote.app.ui.appViewModel
 import com.imadnote.app.ui.components.EmptyState
+import com.imadnote.app.ui.components.Illustration
+import com.imadnote.app.ui.components.TaskActions
+import com.imadnote.app.ui.components.contentWidth
+import com.imadnote.app.ui.components.rememberTaskToggle
 import com.imadnote.app.ui.components.NoteCard
 import com.imadnote.app.ui.components.ProjectCard
 import com.imadnote.app.ui.components.SectionHeader
@@ -60,7 +62,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 enum class SearchScope { ALL, NOTES, TASKS, PROJECTS }
 
@@ -89,9 +90,7 @@ class SearchViewModel(private val c: AppContainer, private val handle: SavedStat
 
     fun setQuery(q: String) { handle["q"] = q }
     fun setScope(s: SearchScope) { handle["scope"] = s.name }
-    fun toggle(task: TaskEntity) {
-        viewModelScope.launch { c.tasks.toggleComplete(task) }
-    }
+    val taskActions = TaskActions(c.tasks, viewModelScope)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,6 +107,7 @@ fun SearchScreen(
     val scope = SearchScope.valueOf(scopeName)
     val results by vm.results.collectAsStateWithLifecycle()
     val container = LocalAppContainer.current
+    val toggle = rememberTaskToggle(vm.taskActions)
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { focus.requestFocus() }
 
@@ -137,7 +137,7 @@ fun SearchScreen(
         },
     ) { padding ->
         LazyColumn(
-            Modifier.fillMaxSize().padding(padding).imePadding(),
+            Modifier.fillMaxSize().padding(padding).imePadding().contentWidth(),
             contentPadding = PaddingValues(start = Spacing.lg, end = Spacing.lg, bottom = Spacing.xxl),
         ) {
             item("scopes") {
@@ -168,11 +168,11 @@ fun SearchScreen(
                 }
             }
             if (query.isBlank()) {
-                item("hint") { EmptyState(Icons.Outlined.Search, stringResource(R.string.search_start_title), stringResource(R.string.search_start_body)) }
+                item("hint") { EmptyState(Illustration.SEARCH, stringResource(R.string.search_start_title), stringResource(R.string.search_start_body)) }
                 return@LazyColumn
             }
             if (results.query.isNotEmpty() && results.isEmpty) {
-                item("none") { EmptyState(Icons.Outlined.SearchOff, stringResource(R.string.search_none_title), stringResource(R.string.search_none_body, results.query)) }
+                item("none") { EmptyState(Illustration.SEARCH, stringResource(R.string.search_none_title), stringResource(R.string.search_none_body, results.query)) }
             }
             val showNotes = scope == SearchScope.ALL || scope == SearchScope.NOTES
             val showTasks = scope == SearchScope.ALL || scope == SearchScope.TASKS
@@ -180,7 +180,7 @@ fun SearchScreen(
             if (showTasks && results.tasks.isNotEmpty()) {
                 item("th") { SectionHeader(stringResource(R.string.tab_tasks), count = results.tasks.size) }
                 items(results.tasks, key = { "t" + it.id }) { t ->
-                    TaskRow(t, onToggle = { vm.toggle(t) }, onClick = { onOpenTask(t.id) })
+                    TaskRow(t, onToggle = { toggle(t) }, onClick = { onOpenTask(t.id) })
                 }
             }
             if (showNotes && results.notes.isNotEmpty()) {

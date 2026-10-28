@@ -9,7 +9,6 @@ import com.imadnote.app.R
 import com.imadnote.app.data.AttachmentEntity
 import com.imadnote.app.data.ChecklistItemEntity
 import com.imadnote.app.data.NoteEntity
-import com.imadnote.app.data.TaskEntity
 import com.imadnote.app.data.newId
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -51,6 +50,7 @@ class NoteEditorViewModel(private val c: AppContainer, handle: SavedStateHandle)
     private val argId: String = handle["id"] ?: "new"
     val noteId: String = handle.get<String>("draftId") ?: (if (argId == "new") newId() else argId).also { handle["draftId"] = it }
     val mode: String = handle["mode"] ?: ""
+    val isNew: Boolean = argId == "new"
 
     private val _state = MutableStateFlow(NoteEditorState())
     val state = _state.asStateFlow()
@@ -200,9 +200,7 @@ class NoteEditorViewModel(private val c: AppContainer, handle: SavedStateHandle)
         }
     }
 
-    fun toggleLinkedTask(task: TaskEntity) {
-        viewModelScope.launch { c.tasks.toggleComplete(task) }
-    }
+    val taskActions = com.imadnote.app.ui.components.TaskActions(c.tasks, viewModelScope)
 
     fun setArchived(archived: Boolean, onDone: () -> Unit) {
         viewModelScope.launch {

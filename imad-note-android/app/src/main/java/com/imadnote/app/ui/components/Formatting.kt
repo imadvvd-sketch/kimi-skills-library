@@ -4,6 +4,7 @@ import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.imadnote.app.R
 import com.imadnote.app.domain.Recurrence
@@ -68,3 +69,32 @@ fun reminderLabel(offsetMin: Int?): String = when (offsetMin) {
 }
 
 val ReminderOptions = listOf<Int?>(null, 0, 10, 60, 1440)
+
+/** "Today", "Tomorrow", or "Saturday, 26 April" — used for day group headers. */
+@Composable
+fun dayHeaderLabel(date: LocalDate): String {
+    val today = LocalDate.now()
+    val locale = LocalConfiguration.current.locales[0]
+    val full = DateTimeFormatter.ofPattern(if (locale.language == "ar") "EEEE، d MMMM" else "EEEE, d MMMM", locale).format(date)
+    return when (date) {
+        today -> stringResource(R.string.date_today) + " · " + full
+        today.plusDays(1) -> stringResource(R.string.date_tomorrow) + " · " + full
+        else -> full
+    }
+}
+
+/** "now", "10 min ago", "2 h ago", "Yesterday", or a short date. */
+@Composable
+fun relativeTime(millis: Long, now: Long = System.currentTimeMillis()): String {
+    val minutes = ((now - millis) / 60_000L).coerceAtLeast(0)
+    return when {
+        minutes < 1 -> stringResource(R.string.time_now)
+        minutes < 60 -> pluralStringResource(R.plurals.minutes_ago, minutes.toInt(), minutes.toInt())
+        minutes < 24 * 60 -> pluralStringResource(R.plurals.hours_ago, (minutes / 60).toInt(), (minutes / 60).toInt())
+        else -> {
+            val zone = ZoneId.systemDefault()
+            val date = Instant.ofEpochMilli(millis).atZone(zone).toLocalDate()
+            if (date == LocalDate.now(zone).minusDays(1)) stringResource(R.string.date_yesterday) else dueLabel(millis, false)
+        }
+    }
+}

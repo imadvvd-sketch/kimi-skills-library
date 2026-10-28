@@ -101,17 +101,21 @@ class TaskRepository(
         scheduler.schedule(task)
     }
 
+    /** What a completion changed, so it can be undone exactly. */
+    data class Completion(val done: TaskEntity, val createdNext: TaskEntity?)
+
     /**
-     * Completing a recurring task marks this occurrence done and creates the next one,
-     * so the history of completed occurrences is kept.
+     * Toggles completion. Completing a recurring task marks this occurrence done and creates
+     * the next one, so the history of completed occurrences is kept.
+     * Returns the [Completion] when a task was completed, or null when it was reopened.
      */
-    suspend fun toggleComplete(task: TaskEntity) {
+    suspend fun toggleComplete(task: TaskEntity): Completion? {
         val now = now()
         if (task.isCompleted) {
             val reopened = task.copy(completedAt = null, updatedAt = now)
             dao.upsert(reopened)
             scheduler.schedule(reopened)
-            return
+            return null
         }
         val done = task.copy(completedAt = now, updatedAt = now)
         val zone = ZoneId.systemDefault()
@@ -120,22 +124,33 @@ class TaskRepository(
         } else {
             null
         }
-        var next: TaskEntity? = null
+        val next = nextDue?.let { task.copy(id = newId(), dueAt = it, completedAt = null, createdAt = now, updatedAt = now) }
         db.withTransaction {
             dao.upsert(done)
-            if (nextDue != null) {
-                next = task.copy(id = newId(), dueAt = nextDue, completedAt = null, createdAt = now, updatedAt = now)
-                dao.upsert(next!!)
+            if (next != null) {
+                dao.upsert(next)
                 val subs = dao.subtasksOf(task.id)
                 if (subs.isNotEmpty()) {
                     dao.upsertAll(
-                        subs.map { it.copy(id = newId(), parentId = next!!.id, completedAt = null, createdAt = now, updatedAt = now) },
+                        subs.map { it.copy(id = newId(), parentId = next.id, completedAt = null, createdAt = now, updatedAt = now) },
                     )
                 }
             }
         }
         scheduler.cancel(task.id)
         next?.let { scheduler.schedule(it) }
+        return Completion(done, next)
+    }
+
+    /** Reverts [toggleComplete]: reopens the task and removes the generated next occurrence. */
+    suspend fun undoComplete(completion: Completion) {
+        val reopened = completion.done.copy(completedAt = null, updatedAt = now())
+        db.withTransaction {
+            completion.createdNext?.let { dao.delete(it.id) }
+            dao.upsert(reopened)
+        }
+        completion.createdNext?.let { scheduler.cancel(it.id) }
+        scheduler.schedule(reopened)
     }
 
     suspend fun delete(task: TaskEntity) {
@@ -162,3 +177,30 @@ class ProjectRepository(private val db: AppDatabase) {
 }
 
 internal fun now(): Long = System.currentTimeMillis()
+
+/** Saves inline Quick Capture text without opening an editor. */
+class QuickCaptureRepository(private val notes: NoteRepository, private val tasks: TaskRepository) {
+    /** A multi-line capture uses its first line as the title. Returns the new note id. */
+    suspend fun saveNote(text: String): String {
+        val now = now()
+        val lines = text.trim().lines()
+        val (title, content) = if (lines.size > 1) lines.first().trim() to lines.drop(1).joinToString("\n").trim() else "" to text.trim()
+        val note = NoteEntity(title = title, content = content, createdAt = now, updatedAt = now)
+        notes.save(note, emptyList())
+        return note.id
+    }
+
+    /** Returns the new task id. */
+    suspend fun saveTask(text: String): String {
+        val now = now()
+        val lines = text.trim().lines()
+        val task = TaskEntity(
+            title = lines.first().trim(),
+            description = lines.drop(1).joinToString("\n").trim(),
+            createdAt = now,
+            updatedAt = now,
+        )
+        tasks.save(task, emptyList())
+        return task.id
+    }
+}
