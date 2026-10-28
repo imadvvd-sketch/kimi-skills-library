@@ -1,5 +1,6 @@
 package com.imadnote.app.ui.notes
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -131,6 +132,7 @@ fun ImageViewerScreen(onBack: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ZoomableImage(file: File) {
     var scale by remember { mutableFloatStateOf(1f) }
