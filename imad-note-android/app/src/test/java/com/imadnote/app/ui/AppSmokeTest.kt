@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToString
 import org.junit.Before
+import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith
  * them fails CI with a full stack trace.
  */
 @RunWith(AndroidJUnit4::class)
+@Config(qualifiers = "w411dp-h891dp-xxhdpi")
 class AppSmokeTest {
     @get:Rule
     val rule = createAndroidComposeRule<MainActivity>()
