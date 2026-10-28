@@ -16,6 +16,7 @@ class ImadNoteApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        CrashLog.install(this)
         container = AppContainer(this)
         Notifications.createChannels(this)
         container.appScope.launch {

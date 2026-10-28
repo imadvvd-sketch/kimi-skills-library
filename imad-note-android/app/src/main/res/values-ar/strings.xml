@@ -263,4 +263,7 @@
     <string name="theme_system">حسب النظام</string>
     <string name="time_now">الآن</string>
     <string name="untitled_note">ملاحظة بلا عنوان</string>
+    <string name="crash_title">توقف التطبيق في المرة السابقة</string>
+    <string name="crash_body">نعتذر عن ذلك. انسخ هذا التقرير وأرسله لإصلاح المشكلة.</string>
+    <string name="crash_copy">نسخ التقرير</string>
 </resources>

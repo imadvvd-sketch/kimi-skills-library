@@ -10,6 +10,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import com.imadnote.app.ui.components.CrashReportDialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.imadnote.app.data.UserPreferences
 import com.imadnote.app.ui.LocalAppContainer
@@ -31,11 +33,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         if (savedInstanceState == null) pendingRoute = routeFor(intent)
         val container = (application as ImadNoteApp).container
+        val lastCrash = if (savedInstanceState == null) CrashLog.consume(this) else null
         setContent {
             val prefs by container.settings.preferences.collectAsStateWithLifecycle(UserPreferences())
             CompositionLocalProvider(LocalAppContainer provides container) {
                 ImadNoteTheme(prefs.themeMode, prefs.textSize.scale) {
                     ImadNoteRoot(pendingRoute = pendingRoute, onPendingRouteHandled = { pendingRoute = null })
+                    var crash by remember { mutableStateOf(lastCrash) }
+                    crash?.let { report -> CrashReportDialog(report, onDismiss = { crash = null }) }
                 }
             }
         }

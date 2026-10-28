@@ -3,6 +3,8 @@ package com.imadnote.app.ui
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onRoot
@@ -24,7 +26,7 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 @Config(qualifiers = "w411dp-h891dp-xxhdpi")
-class AppSmokeTest {
+open class AppSmokeTest {
     @get:Rule
     val rule = createAndroidComposeRule<MainActivity>()
 
@@ -60,6 +62,30 @@ class AppSmokeTest {
         clickText(s(R.string.tab_notes))
         clickText(s(R.string.add_note))
         assertShown(s(R.string.new_note))
+    }
+
+    @Test
+    fun editorAcceptsTypingAndFormatting() {
+        clickText(s(R.string.tab_notes))
+        clickText(s(R.string.add_note))
+        assertShown(s(R.string.new_note))
+        rule.onAllNodes(hasSetTextAction())[1].performTextInput("- first")
+        rule.waitForIdle()
+        clickDescription(s(R.string.format_bold))
+        clickDescription(s(R.string.format_heading))
+        clickDescription(s(R.string.format_numbers))
+        clickDescription(s(R.string.note_color))
+        clickDescription(s(R.string.action_done))
+        assertShown(s(R.string.tab_notes))
+    }
+
+    @Test
+    fun quickCaptureSavesNote() {
+        clickDescription(s(R.string.quick_capture))
+        rule.onAllNodes(hasSetTextAction())[0].performTextInput("Quick idea")
+        clickText(s(R.string.save_as_note))
+        clickText(s(R.string.tab_notes))
+        assertShown("Quick idea")
     }
 
     @Test
@@ -102,3 +128,7 @@ class AppSmokeTest {
         assertShown(s(R.string.search_start_title))
     }
 }
+
+/** Same flows with the device in Arabic (RTL, Arabic strings and typeface). */
+@Config(qualifiers = "ar-w411dp-h891dp-xxhdpi")
+class AppSmokeTestArabic : AppSmokeTest()
