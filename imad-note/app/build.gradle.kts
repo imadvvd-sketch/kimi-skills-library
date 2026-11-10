@@ -51,6 +51,8 @@ android {
                 // The Android runtime jar is resolved by Gradle (cached, proxy-aware) instead of by Robolectric at test time.
                 it.dependsOn(robolectricRuntimeDir)
                 it.systemProperty("robolectric.offline", "true")
+                // Screenshot tests write PNGs to build/outputs/roborazzi for visual review.
+                it.systemProperty("roborazzi.test.record", "true")
                 it.systemProperty("robolectric.dependency.dir", robolectricRuntimeDir.get().destinationDir.absolutePath)
             }
         }

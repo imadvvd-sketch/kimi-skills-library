@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -160,6 +161,7 @@ fun AppShell(viewModel: ShellViewModel, navController: NavHostController = remem
                             NavigationBarItem(
                                 selected = route == destination.route,
                                 onClick = { navController.navigateTop(destination.route) },
+                                modifier = Modifier.testTag("tab-${destination.route}"),
                                 icon = { Icon(destination.icon, null) },
                                 label = { Text(stringResource(destination.label), style = MaterialTheme.typography.labelSmall) },
                                 colors = NavigationBarItemDefaults.colors(

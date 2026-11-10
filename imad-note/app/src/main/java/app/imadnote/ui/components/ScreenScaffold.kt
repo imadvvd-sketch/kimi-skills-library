@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -74,7 +75,7 @@ fun ScreenScaffold(
         if (fabIcon != null && onFab != null) {
             FloatingActionButton(
                 onClick = onFab,
-                modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
+                modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp).testTag("fab"),
                 containerColor = colors.primary, contentColor = colors.onPrimary, shape = MaterialTheme.shapes.large,
             ) { Icon(fabIcon, fabLabel) }
         }
