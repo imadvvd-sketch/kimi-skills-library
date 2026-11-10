@@ -1,0 +1,192 @@
+<resources>
+    <string name="app_name">IMAD NOTE</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_inbox">Inbox</string>
+    <string name="nav_notes">Notes</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_trash">Trash</string>
+    <string name="nav_open_menu">Open menu</string>
+    <string name="nav_more">More</string>
+
+    <!-- Common -->
+    <string name="action_create">Create</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_duplicate">Duplicate</string>
+    <string name="action_back">Back</string>
+    <string name="action_more">More options</string>
+    <string name="action_close">Close</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_open">Open</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_redo">Redo</string>
+    <string name="untitled">Untitled</string>
+
+    <!-- Workspace -->
+    <string name="workspace_personal">Personal</string>
+    <string name="workspace_switch">Switch workspace</string>
+    <string name="workspace_new">New workspace</string>
+    <string name="workspace_name_hint">Workspace name</string>
+    <string name="workspace_rename">Rename workspace</string>
+    <string name="workspace_delete">Delete workspace</string>
+    <string name="workspace_delete_message">“%1$s” and everything in it will be permanently deleted.</string>
+    <string name="workspace_delete_last">You need at least one workspace.</string>
+    <string name="workspace_section">Workspaces</string>
+
+    <!-- Sidebar and pages -->
+    <string name="sidebar_favorites">Favorites</string>
+    <string name="sidebar_pages">Pages</string>
+    <string name="page_new">New page</string>
+    <string name="folder_new">New folder</string>
+    <string name="folder_name_hint">Folder name</string>
+    <string name="page_add_inside">Add a page inside</string>
+    <string name="page_expand">Expand</string>
+    <string name="page_collapse">Collapse</string>
+    <string name="page_favorite_add">Add to favorites</string>
+    <string name="page_favorite_remove">Remove from favorites</string>
+    <string name="page_pin">Pin to Home</string>
+    <string name="page_unpin">Unpin from Home</string>
+    <string name="page_move">Move to…</string>
+    <string name="page_move_top">Top level</string>
+    <string name="page_move_to_trash">Move to trash</string>
+    <string name="page_moved_to_trash">Moved to trash</string>
+    <string name="page_copy_text">Copy as text</string>
+    <string name="page_copied">Copied to clipboard</string>
+    <string name="page_share">Share</string>
+    <string name="page_title_hint">Untitled</string>
+    <string name="page_add_icon">Add icon</string>
+    <string name="page_add_cover">Add cover</string>
+    <string name="page_change_cover">Change cover</string>
+    <string name="page_remove_cover">Remove cover</string>
+    <string name="page_cover">Page cover</string>
+    <string name="page_icon">Page icon</string>
+    <string name="page_choose_icon">Choose an icon</string>
+    <string name="page_saved">Saved</string>
+    <string name="page_saving">Saving…</string>
+    <string name="page_not_found">This page no longer exists.</string>
+    <plurals name="page_count">
+        <item quantity="one">%d page</item>
+        <item quantity="other">%d pages</item>
+    </plurals>
+
+    <!-- Home -->
+    <string name="home_greeting_morning">Good morning</string>
+    <string name="home_greeting_afternoon">Good afternoon</string>
+    <string name="home_greeting_evening">Good evening</string>
+    <string name="home_pinned">Pinned</string>
+    <string name="home_recent">Recently opened</string>
+    <string name="home_empty_title">Your workspace is ready</string>
+    <string name="home_empty_message">Create your first page to start writing. Everything is saved on this device.</string>
+    <string name="home_quick_note">Quick note</string>
+
+    <!-- Notes -->
+    <string name="notes_filter_hint">Filter pages by title</string>
+    <string name="notes_empty_title">No pages yet</string>
+    <string name="notes_empty_message">Pages hold your notes, lists and documents. You can nest them inside each other or group them in folders.</string>
+    <string name="notes_no_match">No page matches “%1$s”.</string>
+    <string name="notes_edited">Edited %1$s</string>
+
+    <!-- Inbox -->
+    <string name="inbox_hint">Capture a thought…</string>
+    <string name="inbox_add">Add to inbox</string>
+    <string name="inbox_empty_title">Inbox is clear</string>
+    <string name="inbox_empty_message">Jot things down here as they come up, then file them into pages later.</string>
+    <string name="inbox_file">File into Pages</string>
+
+    <!-- Trash -->
+    <string name="trash_empty_title">Trash is empty</string>
+    <string name="trash_empty_message">Pages you delete appear here until you remove them permanently.</string>
+    <string name="trash_restore">Restore</string>
+    <string name="trash_delete_forever">Delete permanently</string>
+    <string name="trash_delete_message">“%1$s” and the pages inside it will be deleted permanently. This cannot be undone.</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_data">Data</string>
+    <string name="settings_storage_note">Everything is stored on this device and works offline. There is no cloud sync.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+
+    <!-- Editor -->
+    <string name="editor_placeholder">Type “/” for blocks</string>
+    <string name="editor_insert_block">Add block</string>
+    <string name="editor_turn_into">Turn into</string>
+    <string name="editor_bold">Bold</string>
+    <string name="editor_italic">Italic</string>
+    <string name="editor_underline">Underline</string>
+    <string name="editor_strikethrough">Strikethrough</string>
+    <string name="editor_inline_code">Inline code</string>
+    <string name="editor_text_color">Text color</string>
+    <string name="editor_highlight">Highlight</string>
+    <string name="editor_color_default">Default</string>
+    <string name="editor_align">Change alignment</string>
+    <string name="editor_indent">Indent</string>
+    <string name="editor_outdent">Outdent</string>
+    <string name="editor_move_up">Move up</string>
+    <string name="editor_move_down">Move down</string>
+    <string name="editor_delete_block">Delete block</string>
+    <string name="editor_duplicate_block">Duplicate block</string>
+    <string name="editor_no_blocks_match">No block matches</string>
+    <string name="editor_checked">Done</string>
+    <string name="editor_toggle_expand">Expand toggle</string>
+    <string name="editor_toggle_collapse">Collapse toggle</string>
+    <string name="editor_code_language">Language</string>
+    <string name="editor_caption_hint">Add a caption</string>
+    <string name="editor_choose_image">Choose an image</string>
+    <string name="editor_choose_video">Choose a video</string>
+    <string name="editor_choose_audio">Choose an audio file</string>
+    <string name="editor_choose_file">Choose a file</string>
+    <string name="editor_file_missing">File not available</string>
+    <string name="editor_no_app">No app on this device can open this file.</string>
+    <string name="editor_bookmark_url_hint">Paste a link</string>
+    <string name="editor_bookmark_title_hint">Title (optional)</string>
+    <string name="editor_bookmark_add">Add bookmark</string>
+    <string name="editor_equation_hint">E = mc^2</string>
+    <string name="editor_toc_empty">Headings you add to this page will be listed here.</string>
+    <string name="editor_table_add_row">Add row</string>
+    <string name="editor_table_add_column">Add column</string>
+    <string name="editor_table_remove_row">Remove last row</string>
+    <string name="editor_table_remove_column">Remove last column</string>
+    <string name="editor_table_cell">Row %1$d, column %2$d</string>
+    <string name="editor_callout_icon">Callout icon</string>
+    <string name="editor_image_zoom">View image</string>
+
+    <string name="block_paragraph">Text</string>
+    <string name="block_h1">Heading 1</string>
+    <string name="block_h2">Heading 2</string>
+    <string name="block_h3">Heading 3</string>
+    <string name="block_bullet">Bulleted list</string>
+    <string name="block_numbered">Numbered list</string>
+    <string name="block_todo">To-do list</string>
+    <string name="block_toggle">Toggle list</string>
+    <string name="block_quote">Quote</string>
+    <string name="block_callout">Callout</string>
+    <string name="block_divider">Divider</string>
+    <string name="block_code">Code</string>
+    <string name="block_table">Table</string>
+    <string name="block_image">Image</string>
+    <string name="block_video">Video</string>
+    <string name="block_audio">Audio</string>
+    <string name="block_file">File</string>
+    <string name="block_bookmark">Bookmark</string>
+    <string name="block_equation">Equation</string>
+    <string name="block_toc">Table of contents</string>
+
+    <string name="color_gray">Gray</string>
+    <string name="color_red">Red</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_purple">Purple</string>
+</resources>
