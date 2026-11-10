@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -29,6 +30,7 @@ import app.imadnote.domain.editor.EditorDoc
 import app.imadnote.domain.editor.InlineStyle
 import app.imadnote.domain.editor.Span
 import app.imadnote.testContainer
+import app.imadnote.testContext
 import app.imadnote.ui.shell.AppShell
 import app.imadnote.ui.shell.ShellViewModel
 import app.imadnote.ui.theme.ImadNoteTheme
@@ -79,6 +81,15 @@ class AppFlowTest {
         rule.onAllNodes(hasTestTag(tag)).fetchSemanticsNodes().isNotEmpty()
     }
 
+    /** Destinations outside the bottom bar are reached through "More", which opens the sidebar. */
+    private fun openFromMenu(label: String) {
+        rule.onNodeWithTag("tab-more").performClick()
+        settle()
+        rule.onNodeWithTag("nav-" + route(label)).performClick()
+        settle()
+    }
+
+    private fun route(label: String) = app.imadnote.ui.shell.Destination.entries.first { testContext().getString(it.label) == label }.route
     private fun shot(name: String) = rule.onRoot().captureRoboImage("build/outputs/roborazzi/$name.png")
 
     private fun seed() = runBlocking {
@@ -186,9 +197,8 @@ class AppFlowTest {
 
     @Test fun `inbox capture adds an item that can be filed into pages`() {
         launch()
-        rule.onNodeWithTag("tab-inbox").performClick()
-        settle()
-        rule.onNode(hasSetTextAction()).performTextInput("Call the supplier")
+        openFromMenu("Inbox")
+        rule.onNodeWithTag("capture-field").performTextInput("Call the supplier")
         rule.onNodeWithContentDescription("Add to inbox").performClick()
         awaitText("Call the supplier")
         shot("inbox-light")
@@ -212,8 +222,7 @@ class AppFlowTest {
 
     @Test fun `theme choice in settings is persisted`() {
         launch()
-        rule.onNodeWithTag("tab-settings").performClick()
-        settle()
+        openFromMenu("Settings")
         shot("settings-light")
         rule.onNodeWithText("Dark").performClick()
         awaitUntil { runBlocking { container.settings.themeMode.first() == ThemeMode.DARK } }
@@ -248,7 +257,7 @@ class AppFlowTest {
         launch()
         rule.onNode(hasTestTag("tab-home") and hasText("الرئيسية")).assertIsDisplayed()
         val home = rule.onNodeWithTag("tab-home").fetchSemanticsNode().boundsInRoot
-        val settings = rule.onNodeWithTag("tab-settings").fetchSemanticsNode().boundsInRoot
+        val settings = rule.onNodeWithTag("tab-more").fetchSemanticsNode().boundsInRoot
         assertTrue("first tab should be on the right in RTL", home.left > settings.left)
         shot("home-arabic")
         rule.onAllNodesWithText("Product launch plan")[0].performClick()

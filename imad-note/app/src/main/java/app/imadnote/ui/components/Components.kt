@@ -234,9 +234,7 @@ fun TextInputDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title, style = MaterialTheme.typography.titleLarge) },
-        text = {
-            AppTextField(value, { value = it }, placeholder, Modifier.fillMaxWidth(), onDone = { if (value.isNotBlank()) onConfirm(value.trim()) })
-        },
+        text = { DialogTextField(value, { value = it }, placeholder, onDone = { if (value.isNotBlank()) onConfirm(value.trim()) }) },
         confirmButton = { TextButton(onClick = { onConfirm(value.trim()) }, enabled = value.isNotBlank()) { Text(confirmLabel) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(dismissLabel, color = ImadTheme.colors.textSecondary) } },
         containerColor = ImadTheme.colors.surface,
@@ -295,6 +293,32 @@ fun AppTextField(
                     inner()
                 }
                 if (trailing != null) trailing()
+            }
+        },
+    )
+}
+
+
+/**
+ * Single-line field for dialogs. It avoids the Row-with-weight decoration of [AppTextField]:
+ * inside AlertDialog's intrinsic measurement that layout never settled at some screen sizes.
+ */
+@Composable
+fun DialogTextField(value: String, onValueChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier, onDone: (() -> Unit)? = null) {
+    val style = MaterialTheme.typography.bodyLarge
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier.fillMaxWidth(),
+        singleLine = true,
+        textStyle = style.copy(color = ImadTheme.colors.text),
+        cursorBrush = SolidColor(ImadTheme.colors.primary),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onDone?.invoke() }),
+        decorationBox = { inner ->
+            Box(Modifier.fillMaxWidth().clip(MaterialTheme.shapes.small).background(ImadTheme.colors.surfaceAlt).padding(horizontal = 14.dp, vertical = 12.dp)) {
+                if (value.isEmpty()) Text(placeholder, style = style, color = ImadTheme.colors.textTertiary, maxLines = 1)
+                inner()
             }
         },
     )

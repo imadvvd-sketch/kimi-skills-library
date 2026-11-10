@@ -55,9 +55,7 @@
     <string name="page_move">Move to…</string>
     <string name="page_move_top">Top level</string>
     <string name="page_move_to_trash">Move to trash</string>
-    <string name="page_moved_to_trash">Moved to trash</string>
     <string name="page_copy_text">Copy as text</string>
-    <string name="page_copied">Copied to clipboard</string>
     <string name="page_share">Share</string>
     <string name="page_title_hint">Untitled</string>
     <string name="page_add_icon">Add icon</string>
@@ -69,7 +67,6 @@
     <string name="page_choose_icon">Choose an icon</string>
     <string name="page_saved">Saved</string>
     <string name="page_saving">Saving…</string>
-    <string name="page_not_found">This page no longer exists.</string>
     <plurals name="page_count">
         <item quantity="one">%d page</item>
         <item quantity="other">%d pages</item>
@@ -83,7 +80,6 @@
     <string name="home_recent">Recently opened</string>
     <string name="home_empty_title">Your workspace is ready</string>
     <string name="home_empty_message">Create your first page to start writing. Everything is saved on this device.</string>
-    <string name="home_quick_note">Quick note</string>
 
     <!-- Notes -->
     <string name="notes_filter_hint">Filter pages by title</string>
@@ -190,4 +186,304 @@
     <string name="color_green">Green</string>
     <string name="color_blue">Blue</string>
     <string name="color_purple">Purple</string>
+
+    <!-- Navigation (modules) -->
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_projects">Projects</string>
+    <string name="nav_databases">Databases</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_analytics">Analytics</string>
+    <string name="nav_search">Search</string>
+    <string name="action_add">Add</string>
+    <string name="action_done">Done</string>
+    <string name="action_clear">Clear</string>
+
+    <!-- Dates -->
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="date_yesterday">Yesterday</string>
+    <string name="date_none">No date</string>
+    <string name="time_pick">Pick a time</string>
+    <string name="time_none">No time</string>
+
+    <!-- Tasks -->
+    <string name="tasks_today">Today</string>
+    <string name="tasks_upcoming">Upcoming</string>
+    <string name="tasks_all">All</string>
+    <string name="tasks_completed">Completed</string>
+    <string name="tasks_by_priority">Priority</string>
+    <string name="tasks_by_project">Projects</string>
+    <string name="tasks_add_hint">Add a task, e.g. “Call Sara tomorrow !3 #work”</string>
+    <string name="tasks_add">Add task</string>
+    <string name="tasks_overdue">Overdue</string>
+    <string name="tasks_no_project">No project</string>
+    <string name="tasks_empty_today">Nothing due today</string>
+    <string name="tasks_empty_message">Add a task above. Dates, priority and labels can be typed right into the title.</string>
+    <string name="tasks_empty_completed">Completed tasks will appear here.</string>
+    <string name="tasks_added">Task added</string>
+    <string name="priority_none">No priority</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_high">High</string>
+    <string name="priority">Priority</string>
+    <string name="task_title_hint">Task name</string>
+    <string name="task_description_hint">Add details</string>
+    <string name="task_due">Due date</string>
+    <string name="task_time">Time</string>
+    <string name="task_reminder">Reminder</string>
+    <string name="task_repeat">Repeat</string>
+    <string name="task_project">Project</string>
+    <string name="task_labels">Labels</string>
+    <string name="task_subtasks">Subtasks</string>
+    <string name="task_add_subtask">Add a subtask</string>
+    <string name="task_attachments">Attachments</string>
+    <string name="task_add_attachment">Attach a file</string>
+    <string name="task_delete">Delete task</string>
+    <string name="task_delete_message">“%1$s” and its subtasks will be deleted.</string>
+    <string name="task_completed_on">Completed %1$s</string>
+    <string name="task_mark_done">Mark as done</string>
+    <string name="task_mark_open">Mark as not done</string>
+    <string name="task_not_found">This task no longer exists.</string>
+    <string name="status_todo">To do</string>
+    <string name="status_in_progress">In progress</string>
+    <string name="status_done">Done</string>
+    <string name="repeat_none">Does not repeat</string>
+    <string name="repeat_daily">Every day</string>
+    <string name="repeat_weekly">Every week</string>
+    <string name="repeat_monthly">Every month</string>
+    <string name="repeat_yearly">Every year</string>
+    <string name="repeat_weekdays">Every weekday</string>
+    <string name="label_new">New label</string>
+    <string name="label_name_hint">Label name</string>
+    <string name="reminder_none">No reminder</string>
+    <string name="reminder_at_time">At the time</string>
+    <string name="reminder_10m">10 minutes before</string>
+    <string name="reminder_1h">1 hour before</string>
+    <string name="reminder_1d">1 day before</string>
+    <string name="reminder_morning">On the day at 9:00</string>
+    <plurals name="subtask_progress">
+        <item quantity="one">%1$d of %2$d subtask</item>
+        <item quantity="other">%1$d of %2$d subtasks</item>
+    </plurals>
+
+    <!-- Projects -->
+    <string name="projects_new">New project</string>
+    <string name="project_name_hint">Project name</string>
+    <string name="projects_empty_title">No projects yet</string>
+    <string name="projects_empty_message">Projects group related tasks and notes, with a deadline and progress you can follow.</string>
+    <string name="project_status_planned">Planned</string>
+    <string name="project_status_active">Active</string>
+    <string name="project_status_on_hold">On hold</string>
+    <string name="project_status_done">Done</string>
+    <string name="project_start">Start</string>
+    <string name="project_deadline">Deadline</string>
+    <string name="project_progress">%1$d%% complete</string>
+    <plurals name="project_task_count">
+        <item quantity="one">%1$d of %2$d task done</item>
+        <item quantity="other">%1$d of %2$d tasks done</item>
+    </plurals>
+    <string name="project_tasks">Tasks</string>
+    <string name="project_notes">Notes</string>
+    <string name="project_new_note">New note</string>
+    <string name="project_no_notes">Notes created here are linked to the project.</string>
+    <string name="project_no_tasks">No tasks in this project yet.</string>
+    <string name="project_timeline">Timeline</string>
+    <string name="project_timeline_empty">Set a start date and a deadline to see the timeline.</string>
+    <plurals name="project_days_left">
+        <item quantity="one">%1$d day left</item>
+        <item quantity="other">%1$d days left</item>
+    </plurals>
+    <plurals name="project_days_overdue">
+        <item quantity="one">%1$d day overdue</item>
+        <item quantity="other">%1$d days overdue</item>
+    </plurals>
+    <string name="project_open">Open</string>
+    <string name="project_overdue_tasks">Overdue</string>
+    <string name="project_delete">Delete project</string>
+    <string name="project_delete_message">“%1$s” will be deleted. Its tasks and notes are kept.</string>
+    <string name="project_description_hint">Describe the project</string>
+    <string name="project_not_found">This project no longer exists.</string>
+
+    <!-- Calendar -->
+    <string name="cal_month">Month</string>
+    <string name="cal_week">Week</string>
+    <string name="cal_day">Day</string>
+    <string name="cal_agenda">Agenda</string>
+    <string name="cal_today">Today</string>
+    <string name="cal_previous">Previous</string>
+    <string name="cal_next">Next</string>
+    <string name="cal_new_event">New event</string>
+    <string name="cal_edit_event">Edit event</string>
+    <string name="cal_nothing">Nothing scheduled</string>
+    <string name="cal_all_day">All day</string>
+    <string name="cal_agenda_empty">Nothing in the next 30 days.</string>
+    <string name="event_title_hint">Event title</string>
+    <string name="event_start">Starts</string>
+    <string name="event_end">Ends</string>
+    <string name="event_notes_hint">Notes</string>
+    <string name="event_delete">Delete event</string>
+
+    <!-- Databases -->
+    <string name="db_new">New database</string>
+    <string name="db_name_hint">Database name</string>
+    <string name="db_empty_title">No databases yet</string>
+    <string name="db_empty_message">Databases organise records with properties you choose, shown as a table, board, calendar, gallery or list.</string>
+    <plurals name="db_record_count">
+        <item quantity="one">%d record</item>
+        <item quantity="other">%d records</item>
+    </plurals>
+    <string name="db_view_table">Table</string>
+    <string name="db_view_board">Board</string>
+    <string name="db_view_calendar">Calendar</string>
+    <string name="db_view_gallery">Gallery</string>
+    <string name="db_view_list">List</string>
+    <string name="db_new_view">New view</string>
+    <string name="db_rename_view">Rename view</string>
+    <string name="db_delete_view">Delete view</string>
+    <string name="db_new_record">New</string>
+    <string name="db_add_property">Add property</string>
+    <string name="db_property_name_hint">Property name</string>
+    <string name="db_property_type">Type</string>
+    <string name="db_filter">Filter</string>
+    <string name="db_sort">Sort</string>
+    <string name="db_group">Group</string>
+    <string name="db_properties">Properties</string>
+    <string name="db_search_hint">Search records</string>
+    <string name="db_rename_property">Rename property</string>
+    <string name="db_change_type">Change type</string>
+    <string name="db_edit_options">Edit options</string>
+    <string name="db_hide">Hide in this view</string>
+    <string name="db_delete_property">Delete property</string>
+    <string name="db_delete_property_message">“%1$s” and its values in every record will be deleted.</string>
+    <string name="db_sort_ascending">Sort ascending</string>
+    <string name="db_sort_descending">Sort descending</string>
+    <string name="db_option_name_hint">New option</string>
+    <string name="db_relation_target">Linked database</string>
+    <string name="db_relation_pick">Choose the database to link to</string>
+    <string name="db_formula">Formula</string>
+    <string name="db_formula_help">Examples: prop(\"Price\") * prop(\"Qty\") · if(prop(\"Done\"), \"✓\", \"\") · dateBetween(prop(\"Date\"), today(), \"days\")</string>
+    <string name="db_no_value">No value</string>
+    <string name="db_empty_cell">Empty</string>
+    <string name="db_record_delete">Delete record</string>
+    <string name="db_record_duplicate">Duplicate record</string>
+    <string name="db_delete">Delete database</string>
+    <string name="db_delete_message">“%1$s” and all its records will be deleted.</string>
+    <string name="db_add_filter">Add filter</string>
+    <string name="db_add_sort">Add sort</string>
+    <string name="db_none">None</string>
+    <string name="db_group_by">Group by</string>
+    <string name="db_date_property">Show by date</string>
+    <string name="db_move_to">Move to</string>
+    <string name="db_no_date_property">Add a Date property to use the calendar view.</string>
+    <string name="db_no_group_property">Add a Select or Status property to group the board.</string>
+    <string name="db_no_records">No records match.</string>
+    <string name="db_value_hint">Value</string>
+    <string name="db_not_found">This database no longer exists.</string>
+    <string name="db_rename">Rename database</string>
+    <string name="prop_title">Title</string>
+    <string name="prop_text">Text</string>
+    <string name="prop_number">Number</string>
+    <string name="prop_select">Select</string>
+    <string name="prop_multi_select">Multi-select</string>
+    <string name="prop_status">Status</string>
+    <string name="prop_date">Date</string>
+    <string name="prop_checkbox">Checkbox</string>
+    <string name="prop_url">URL</string>
+    <string name="prop_email">Email</string>
+    <string name="prop_phone">Phone</string>
+    <string name="prop_person">Person</string>
+    <string name="prop_relation">Relation</string>
+    <string name="prop_formula">Formula</string>
+    <string name="prop_created_time">Created time</string>
+    <string name="prop_last_edited_time">Last edited time</string>
+    <string name="op_contains">contains</string>
+    <string name="op_not_contains">does not contain</string>
+    <string name="op_is">is</string>
+    <string name="op_is_not">is not</string>
+    <string name="op_greater">greater than</string>
+    <string name="op_less">less than</string>
+    <string name="op_before">before</string>
+    <string name="op_after">after</string>
+    <string name="op_empty">is empty</string>
+    <string name="op_not_empty">is not empty</string>
+    <string name="op_checked">is checked</string>
+    <string name="op_unchecked">is not checked</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search pages, tasks, records…</string>
+    <string name="search_recent">Recent searches</string>
+    <string name="search_clear_history">Clear history</string>
+    <string name="search_no_results">No results for “%1$s”.</string>
+    <string name="search_empty_title">Search everything</string>
+    <string name="search_empty_message">Pages, page content, tasks, projects, database records, events and file names.</string>
+    <string name="search_all">All</string>
+    <string name="search_pages">Pages</string>
+    <string name="search_tasks">Tasks</string>
+    <string name="search_projects">Projects</string>
+    <string name="search_records">Records</string>
+    <string name="search_events">Events</string>
+    <string name="search_files">Files</string>
+    <string name="search_in_page">In a page</string>
+
+    <!-- Analytics -->
+    <string name="analytics_completed">Completed</string>
+    <string name="analytics_pending">Open</string>
+    <string name="analytics_overdue">Overdue</string>
+    <string name="analytics_rate">Completion rate</string>
+    <string name="analytics_last7">Last 7 days</string>
+    <string name="analytics_weeks">Last 12 weeks</string>
+    <string name="analytics_months">Last 6 months</string>
+    <string name="analytics_by_priority">Open tasks by priority</string>
+    <string name="analytics_projects">Project progress</string>
+    <string name="analytics_empty_title">No activity yet</string>
+    <string name="analytics_empty_message">Statistics are calculated from your tasks. Add and complete a few to see your trends.</string>
+    <string name="analytics_legend_done">Completed</string>
+    <string name="analytics_legend_created">Created</string>
+    <string name="analytics_streak">%1$d-day streak</string>
+    <plurals name="analytics_done_this_week">
+        <item quantity="one">%1$d done this week</item>
+        <item quantity="other">%1$d done this week</item>
+    </plurals>
+    <string name="analytics_vs_last_week">%1$+d vs last week</string>
+
+    <!-- Backup -->
+    <string name="backup_section">Backup</string>
+    <string name="backup_export">Back up now</string>
+    <string name="backup_export_desc">Save every page, task, database and file into one file you can keep anywhere.</string>
+    <string name="backup_restore">Restore from backup</string>
+    <string name="backup_restore_desc">Replace everything on this device with the contents of a backup file.</string>
+    <string name="backup_restore_confirm">Replace all data?</string>
+    <string name="backup_restore_message">Everything currently in the app will be replaced by the backup. Make a backup first if you are not sure.</string>
+    <string name="backup_done">Backup saved: %1$d pages, %2$d tasks, %3$d records, %4$d files.</string>
+    <string name="backup_restored">Restored: %1$d pages, %2$d tasks, %3$d records, %4$d files.</string>
+    <string name="backup_failed">The operation failed: %1$s</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_off">Notifications are off, so reminders cannot appear.</string>
+    <string name="settings_notifications_allow">Allow</string>
+
+    <!-- Quick capture -->
+    <string name="capture_note">Note</string>
+    <string name="capture_task">Task</string>
+    <string name="capture_checklist">Checklist</string>
+    <string name="capture_idea">Idea</string>
+    <string name="capture_bookmark">Link</string>
+    <string name="capture_image">Image</string>
+    <string name="capture_voice">Voice</string>
+    <string name="capture_checklist_hint">One item per line</string>
+    <string name="capture_bookmark_hint">Paste a link</string>
+    <string name="capture_task_hint">Task, e.g. “Pay rent tomorrow !2”</string>
+    <string name="capture_idea_hint">What is the idea?</string>
+    <string name="capture_saved">Saved to Inbox</string>
+    <string name="capture_image_title">Image %1$s</string>
+    <string name="capture_shared">Shared to Inbox</string>
+    <string name="voice_title">Voice note %1$s</string>
+    <string name="voice_recording">Recording…</string>
+    <string name="voice_stop">Stop and save</string>
+    <string name="voice_permission">Microphone access is needed to record a voice note.</string>
+    <string name="voice_failed">Recording could not start on this device.</string>
+
+    <!-- Home -->
+    <string name="home_today_tasks">Today</string>
+    <string name="home_all_clear">Nothing due today.</string>
+    <string name="home_see_all">See all</string>
 </resources>

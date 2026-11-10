@@ -111,3 +111,28 @@ class QueryTest {
         assertEquals("3", Value.Num(3.0).asText())
     }
 }
+
+class RowBuilderTest {
+    @Test fun formulas_relations_and_cycles() {
+        val price = PropertyEntity("p", "c", "Price", PropertyType.NUMBER, sortIndex = 1)
+        val qty = PropertyEntity("q", "c", "Qty", PropertyType.NUMBER, sortIndex = 2)
+        val total = PropertyEntity("t", "c", "Total", PropertyType.FORMULA, DbJson.encode(PropertyConfig(formula = """prop("Price") * prop("Qty")""")), 3)
+        val label = PropertyEntity("l", "c", "Label", PropertyType.FORMULA, DbJson.encode(PropertyConfig(formula = """"Total: " + prop("Total")""")), 4)
+        val a = PropertyEntity("a", "c", "A", PropertyType.FORMULA, DbJson.encode(PropertyConfig(formula = """prop("B")""")), 5)
+        val b = PropertyEntity("b", "c", "B", PropertyType.FORMULA, DbJson.encode(PropertyConfig(formula = """prop("A")""")), 6)
+        val rel = PropertyEntity("r", "c", "Author", PropertyType.RELATION, sortIndex = 7)
+        val rows = app.imadnote.ui.databases.RowBuilder.build(
+            listOf(price, qty, total, label, a, b, rel),
+            listOf(app.imadnote.data.db.RecordEntity("x", "c", 0, 0, 0)),
+            listOf(app.imadnote.data.db.CellEntity("x", "p", "2.5"), app.imadnote.data.db.CellEntity("x", "q", "4")),
+            listOf(app.imadnote.data.db.RecordRelationEntity("x", "r", "y")),
+            mapOf("y" to "Herbert"),
+        )
+        val row = rows.single()
+        assertEquals(Value.Num(10.0), row.value("t"))
+        assertEquals(Value.Str("Total: 10"), row.value("l"))
+        assertEquals(Value.Many(listOf("Herbert")), row.value("r"))
+        assertTrue(row.formulaErrors.containsKey("a"))
+        assertTrue(row.formulaErrors.containsKey("b"))
+    }
+}

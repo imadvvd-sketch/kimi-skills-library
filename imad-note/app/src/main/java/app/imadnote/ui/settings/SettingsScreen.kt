@@ -18,6 +18,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.SettingsBackupRestore
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.HorizontalDivider
@@ -29,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -124,6 +127,9 @@ fun SettingsScreen(viewModel: ShellViewModel, onOpenMenu: (() -> Unit)?, onOpenT
             }
 
             Spacer(Modifier.height(8.dp))
+            BackupSection()
+
+            Spacer(Modifier.height(8.dp))
             SectionHeader(stringResource(R.string.settings_data))
             AppCard(Modifier.fillMaxWidth(), padding = PaddingValues(vertical = 4.dp)) {
                 ListRow(
@@ -187,5 +193,78 @@ private fun <T> Segmented(options: List<Pair<T, String>>, selected: T, onSelect:
                     .clickable(role = Role.RadioButton) { onSelect(value) }.semantics { this.selected = active }.padding(vertical = 10.dp),
             )
         }
+    }
+}
+
+
+@Composable
+private fun BackupSection() {
+    val colors = ImadTheme.colors
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val container = app.imadnote.LocalAppContainer.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var status by remember { mutableStateOf<String?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    var restoreUri by remember { mutableStateOf<android.net.Uri?>(null) }
+    var notificationsAllowed by remember { mutableStateOf(app.imadnote.data.reminders.AlarmReminders.canNotify(context)) }
+
+    fun run(work: suspend () -> app.imadnote.data.backup.BackupSummary, message: Int) {
+        busy = true
+        scope.launch {
+            status = try {
+                val s = work()
+                context.getString(message, s.pages, s.tasks, s.records, s.attachments)
+            } catch (e: Exception) {
+                context.getString(R.string.backup_failed, e.message ?: e.javaClass.simpleName)
+            }
+            busy = false
+        }
+    }
+    val exporter = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        if (uri != null) run({
+            context.contentResolver.openOutputStream(uri)?.use { container.backup.export(it) } ?: throw IllegalStateException("Cannot write the file")
+        }, R.string.backup_done)
+    }
+    val importer = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri -> restoreUri = uri }
+    val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { notificationsAllowed = it }
+
+    SectionHeader(stringResource(R.string.backup_section))
+    AppCard(Modifier.fillMaxWidth(), padding = PaddingValues(vertical = 4.dp)) {
+        ListRow(
+            title = stringResource(R.string.backup_export), subtitle = stringResource(R.string.backup_export_desc),
+            leading = { Icon(androidx.compose.material.icons.Icons.Rounded.CloudUpload, null, tint = colors.primary) },
+            onClick = if (busy) null else ({ exporter.launch("imad-note-" + java.time.LocalDate.now() + ".zip") }),
+        )
+        HorizontalDivider(color = colors.border, modifier = Modifier.padding(horizontal = 16.dp))
+        ListRow(
+            title = stringResource(R.string.backup_restore), subtitle = stringResource(R.string.backup_restore_desc),
+            leading = { Icon(androidx.compose.material.icons.Icons.Rounded.SettingsBackupRestore, null, tint = colors.textSecondary) },
+            onClick = if (busy) null else ({ importer.launch(arrayOf("application/zip", "application/octet-stream")) }),
+        )
+    }
+    if (busy) androidx.compose.material3.LinearProgressIndicator(Modifier.fillMaxWidth(), color = colors.primary, trackColor = colors.surfaceAlt)
+    status?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary, modifier = Modifier.padding(horizontal = 4.dp)) }
+
+    if (!notificationsAllowed && android.os.Build.VERSION.SDK_INT >= 33) {
+        Spacer(Modifier.height(8.dp))
+        SectionHeader(stringResource(R.string.settings_notifications))
+        AppCard(Modifier.fillMaxWidth(), padding = PaddingValues(vertical = 4.dp)) {
+            ListRow(
+                title = stringResource(R.string.settings_notifications_off),
+                trailing = { androidx.compose.material3.TextButton(onClick = { permission.launch(android.Manifest.permission.POST_NOTIFICATIONS) }) { Text(stringResource(R.string.settings_notifications_allow)) } },
+            )
+        }
+    }
+
+    restoreUri?.let { uri ->
+        ConfirmDialog(
+            stringResource(R.string.backup_restore_confirm), stringResource(R.string.backup_restore_message),
+            stringResource(R.string.backup_restore), stringResource(R.string.action_cancel), destructive = true,
+            onConfirm = {
+                restoreUri = null
+                run({ context.contentResolver.openInputStream(uri)?.use { container.backup.restore(it) } ?: throw IllegalStateException("Cannot read the file") }, R.string.backup_restored)
+            },
+            onDismiss = { restoreUri = null },
+        )
     }
 }

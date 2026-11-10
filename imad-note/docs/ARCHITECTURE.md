@@ -34,34 +34,39 @@ Native Android app: Kotlin, Jetpack Compose, Room. Offline-first, no backend, no
 - **Language** uses AppCompat per-app locales; **theme** is stored in DataStore.
 - **Navigation destinations are only listed once their module works**, so there are no dead buttons.
 
-## Roadmap
+## Modules
 
-| Phase | Scope | Status |
-|---|---|---|
-| 1 | Architecture, build, schema | Done |
-| 2 | Design system, light/dark, RTL | Done |
-| 3 | Workspaces, sidebar, navigation, Home, Settings, Trash | Done |
-| 4 | Block editor | Done, see limitations |
-| 5 | Notes and pages (nesting, folders, favourites, pins, inbox capture) | Done |
-| 6 | Tasks and projects | Schema only |
-| 7 | Database engine (properties, views, relations, formulas) | Schema only |
-| 8 | Calendar and reminders | Schema only |
-| 9 | Global search UI, attachment library | Index and storage done, no search screen yet |
-| 10 | Analytics, backup and restore | Not started |
-| 11 | Performance work, migration tests | Not started |
-| 12 | Release build, signing, store assets | Not started |
+| Module | What is implemented |
+|---|---|
+| Workspace | Multiple workspaces, switcher, favourites, pins, recent pages, nested pages, folders, trash |
+| Editor | 20 block types, inline formatting, colours, alignment, nesting, slash commands, markdown shortcuts, undo/redo, autosave, icon and cover |
+| Tasks | Quick add with shortcuts (`tomorrow`, `!3`, `#label`, Arabic `غدا`/`اليوم`), subtasks, priority, due date and time, reminders, repeat rules, labels, projects, attachments; Today, Upcoming, All, Priority, Projects and Completed views |
+| Projects | Icon, colour, status, start date, deadline, progress, statistics, timeline, linked tasks and notes |
+| Databases | 16 property types, Table/Board/Calendar/Gallery/List views, filters, sorts, grouping, hidden properties, relations across databases, formulas (language documented in `domain/db/Formula.kt`), type conversion |
+| Calendar | Month, week, day (hour grid) and agenda views showing events, tasks and project deadlines; event editor with reminders |
+| Quick capture | Note, task, checklist, idea, link, image and voice note in one step; share text, links and images from other apps into the Inbox |
+| Search | Full-text across pages, page content, tasks, projects, records, events and file names, with filters, history and highlighted matches |
+| Analytics | Completed, open, overdue, completion rate, streak, last 7 days, 12 weeks, 6 months, open tasks by priority, project progress — all from stored tasks |
+| Backup | ZIP export of all content and files; restore replaces content atomically and rebuilds the index |
 
-## Known limitations of the editor
+## Further decisions
 
-- A text selection cannot span several blocks.
-- Blocks move with the toolbar's up/down buttons; drag and drop is not implemented.
-- Video, audio and file blocks open in another app; there is no inline player.
-- Equations render a documented LaTeX subset as Unicode text (`domain/editor/Equation.kt`), not typeset math.
-- Bookmarks store the link and an optional title; no preview is fetched (the app is offline-first).
-- Links inside text (`InlineStyle.LINK`) are modelled and rendered but there is no UI to create one yet.
+- **No schema change since version 1.** Every module fitted the original tables, so installed copies keep their data without a migration.
+- **Reminders** use `AlarmManager`; exact timing when the user allows exact alarms, otherwise Android may deliver a few minutes late. They are rescheduled after reboot and app updates.
+- **The phone sidebar is a small custom drawer** (`SideDrawer.kt`), composed only while open.
+- **Robolectric limitation:** at phone densities Robolectric never reports Compose idle while a text field is shown inside a Material `AlertDialog` (reproduced with a bare dialog and no app code). Flow tests create named items through repositories; the naming dialog is tested at Robolectric's default size (`DialogProbeTest`).
+
+## Known limitations
+
+- Editor: no selection across several blocks, no drag and drop (blocks move with the toolbar), no inline video/audio player, equations render a LaTeX subset as text, bookmarks have no fetched preview, no UI to create inline links.
+- Databases: board cards move between columns with a long press menu rather than drag and drop; no per-record page content; Person is free text (single-user app).
+- Calendar: events do not repeat; no import from the system calendar.
+- Reminders can be delayed by Android battery optimisation if exact alarms are not allowed.
+- No cloud sync; data lives on the device and in backup files the user saves.
+- Nothing has been run on a physical device or emulator by the developer; please report device-specific issues.
 
 ## Testing
 
 `./gradlew :app:testDebugUnitTest` runs JVM tests and Robolectric tests (database, view-models, and
 end-to-end Compose flows). Screenshot tests write PNGs to `app/build/outputs/roborazzi`.
-Nothing has been run on a physical device or emulator yet.
+120 tests: JVM unit tests, Robolectric database/view-model tests and end-to-end Compose flows in light, dark, Arabic and tablet layouts.

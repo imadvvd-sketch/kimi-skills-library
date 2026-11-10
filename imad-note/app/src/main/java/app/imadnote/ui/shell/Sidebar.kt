@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
@@ -66,6 +68,7 @@ fun Sidebar(
     actions: PageActions,
     onNavigate: (Destination) -> Unit,
     onOpenTrash: () -> Unit,
+    onOpenSearch: () -> Unit,
     onSelectWorkspace: (String) -> Unit,
     onCreateWorkspace: (String) -> Unit,
     onNewPage: () -> Unit,
@@ -80,10 +83,11 @@ fun Sidebar(
         WorkspaceSwitcher(workspaces, current, onSelectWorkspace, onCreateWorkspace)
         Spacer(Modifier.height(4.dp))
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            SidebarItem(Icons.Rounded.Search, stringResource(R.string.nav_search), currentRoute == Routes.SEARCH, onClick = onOpenSearch)
             for (destination in Destination.entries) {
-                SidebarItem(destination.icon, stringResource(destination.label), currentRoute == destination.route) { onNavigate(destination) }
+                SidebarItem(destination.icon, stringResource(destination.label), currentRoute == destination.route, Modifier.testTag("nav-${destination.route}")) { onNavigate(destination) }
             }
-            SidebarItem(Icons.Rounded.DeleteOutline, stringResource(R.string.nav_trash), currentRoute == Routes.TRASH, onOpenTrash)
+            SidebarItem(Icons.Rounded.DeleteOutline, stringResource(R.string.nav_trash), currentRoute == Routes.TRASH, onClick = onOpenTrash)
 
             if (tree != null && tree.favorites.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
@@ -172,10 +176,10 @@ private fun WorkspaceSwitcher(workspaces: List<WorkspaceEntity>, current: Worksp
 }
 
 @Composable
-private fun SidebarItem(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit) {
+private fun SidebarItem(icon: ImageVector, label: String, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val colors = ImadTheme.colors
     Row(
-        Modifier.fillMaxWidth().height(44.dp).clip(RoundedCornerShape(10.dp))
+        modifier.fillMaxWidth().height(44.dp).clip(RoundedCornerShape(10.dp))
             .background(if (selected) colors.primarySoft else Color.Transparent)
             .clickable(role = Role.Tab, onClick = onClick).semantics { this.selected = selected }
             .padding(horizontal = 10.dp),

@@ -79,6 +79,54 @@ class ShellViewModel(private val container: AppContainer, personalWorkspaceName:
         }
     }
 
+    enum class CaptureKind { NOTE, TASK, CHECKLIST, IDEA, BOOKMARK }
+
+    /** One-step capture from the Inbox or a share. [label] titles checklists and link pages. */
+    fun capture(kind: CaptureKind, text: String, label: String = "") {
+        val ws = workspace.value?.id ?: return
+        val clean = text.trim()
+        if (clean.isEmpty()) return
+        viewModelScope.launch {
+            when (kind) {
+                CaptureKind.NOTE -> capture(clean)
+                CaptureKind.TASK -> {
+                    val parsed = app.imadnote.domain.tasks.TaskQuickParser.parse(clean, java.time.LocalDate.now())
+                    container.tasks.create(ws, parsed.title, dueDate = parsed.dueDate, priority = parsed.priority.level, labelNames = parsed.labels)
+                }
+                CaptureKind.CHECKLIST -> pages.create(
+                    ws, title = label, isInbox = true, icon = "☑️",
+                    content = clean.lines().filter { it.isNotBlank() }.map { Block(newId(), app.imadnote.domain.editor.BlockType.TODO, it.trim().removePrefix("- ").removePrefix("[ ] ")) },
+                )
+                CaptureKind.IDEA -> {
+                    val lines = clean.lines()
+                    pages.create(ws, title = lines.first().trim(), icon = "💡", isInbox = true, content = lines.drop(1).filter { it.isNotBlank() }.map { Block(newId(), text = it.trim()) })
+                }
+                CaptureKind.BOOKMARK -> {
+                    val url = clean.substringBefore(' ').let { if ("://" in it) it else "https://$it" }
+                    val host = runCatching { java.net.URI(url).host }.getOrNull()?.removePrefix("www.") ?: url
+                    pages.create(
+                        ws, title = host, icon = "🔖", isInbox = true,
+                        content = listOf(Block(newId(), app.imadnote.domain.editor.BlockType.BOOKMARK, props = app.imadnote.domain.editor.BlockProps(url = url, caption = clean.substringAfter(' ', "").ifBlank { null }))),
+                    )
+                }
+            }
+        }
+    }
+
+    /** Saves a picked image or a recorded audio file as a new Inbox page holding one media block. */
+    fun captureMedia(uri: android.net.Uri, type: app.imadnote.domain.editor.BlockType, title: String, icon: String, onDone: () -> Unit = {}) {
+        val ws = workspace.value?.id ?: return
+        viewModelScope.launch {
+            val blockId = newId()
+            val attachment = container.attachments.import(uri, ws, app.imadnote.data.db.AttachmentOwner.BLOCK, blockId) ?: return@launch
+            pages.create(ws, title = title, icon = icon, isInbox = true, content = listOf(Block(blockId, type, props = app.imadnote.domain.editor.BlockProps(attachmentId = attachment.id, caption = attachment.fileName))))
+            onDone()
+        }
+    }
+
+    /** A route to open once the UI is ready, e.g. from a notification tap. */
+    val pendingRoute = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
+
     fun editPage(id: String, transform: (PageEntity) -> PageEntity) { viewModelScope.launch { pages.edit(id, transform) } }
     fun movePage(id: String, parentId: String?) { viewModelScope.launch { pages.move(id, parentId) } }
     fun duplicatePage(id: String) { viewModelScope.launch { pages.duplicate(id) } }
