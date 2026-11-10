@@ -4,6 +4,13 @@ import android.content.Context
 import androidx.compose.runtime.staticCompositionLocalOf
 import app.imadnote.core.Clock
 import app.imadnote.data.SettingsStore
+import app.imadnote.data.backup.BackupManager
+import app.imadnote.data.reminders.AlarmReminders
+import app.imadnote.data.reminders.Reminders
+import app.imadnote.data.repo.CollectionRepository
+import app.imadnote.data.repo.EventRepository
+import app.imadnote.data.repo.ProjectRepository
+import app.imadnote.data.repo.TaskRepository
 import app.imadnote.data.db.AppDatabase
 import app.imadnote.data.repo.AttachmentRepository
 import app.imadnote.data.repo.PageRepository
@@ -22,6 +29,7 @@ class AppContainer(
     val db: AppDatabase = AppDatabase.build(context),
     val settings: SettingsStore = SettingsStore(context),
     val clock: Clock = Clock.System,
+    val reminders: Reminders = AlarmReminders(context.applicationContext),
 ) {
     /** Outlives screens; used for writes that must finish even if the user leaves, such as the final autosave. */
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -29,6 +37,16 @@ class AppContainer(
     val workspaces = WorkspaceRepository(db, settings, clock)
     val pages = PageRepository(db, indexer, clock)
     val attachments = AttachmentRepository(context.applicationContext, db, indexer, clock)
+    val backup = BackupManager(db, indexer, { attachments.directory }, clock)
+    val tasks = TaskRepository(db, indexer, reminders, clock)
+    val projects = ProjectRepository(db, indexer, clock)
+    val events = EventRepository(db, indexer, reminders, clock)
+    val collections = CollectionRepository(db, indexer, clock)
+
+    suspend fun rescheduleReminders() {
+        tasks.rescheduleAll()
+        events.rescheduleAll()
+    }
 }
 
 val LocalAppContainer = staticCompositionLocalOf<AppContainer> { error("AppContainer not provided") }

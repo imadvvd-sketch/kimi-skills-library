@@ -9,9 +9,11 @@ import androidx.room.Fts4
 import androidx.room.FtsOptions
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
 // Conventions: ids are UUID strings; timestamps are epoch millis; calendar dates are epoch days.
 
+@Serializable
 @Entity(tableName = "workspaces")
 data class WorkspaceEntity(
     @PrimaryKey val id: String,
@@ -23,6 +25,7 @@ data class WorkspaceEntity(
 
 enum class PageKind { PAGE, FOLDER }
 
+@Serializable
 @Entity(
     tableName = "pages",
     foreignKeys = [
@@ -51,6 +54,7 @@ data class PageEntity(
     val lastOpenedAt: Long? = null,
 )
 
+@Serializable
 @Entity(
     tableName = "blocks",
     foreignKeys = [ForeignKey(PageEntity::class, ["id"], ["pageId"], onDelete = CASCADE)],
@@ -75,6 +79,7 @@ data class BlockEntity(
 
 enum class ProjectStatus { PLANNED, ACTIVE, ON_HOLD, DONE }
 
+@Serializable
 @Entity(
     tableName = "projects",
     foreignKeys = [ForeignKey(WorkspaceEntity::class, ["id"], ["workspaceId"], onDelete = CASCADE)],
@@ -97,6 +102,7 @@ data class ProjectEntity(
 
 enum class TaskStatus { TODO, IN_PROGRESS, DONE }
 
+@Serializable
 @Entity(
     tableName = "tasks",
     foreignKeys = [
@@ -130,6 +136,7 @@ data class TaskEntity(
     val updatedAt: Long,
 )
 
+@Serializable
 @Entity(
     tableName = "labels",
     foreignKeys = [ForeignKey(WorkspaceEntity::class, ["id"], ["workspaceId"], onDelete = CASCADE)],
@@ -142,6 +149,7 @@ data class LabelEntity(
     val color: Long,
 )
 
+@Serializable
 @Entity(
     tableName = "task_labels",
     primaryKeys = ["taskId", "labelId"],
@@ -153,6 +161,7 @@ data class LabelEntity(
 )
 data class TaskLabelCrossRef(val taskId: String, val labelId: String)
 
+@Serializable
 @Entity(
     tableName = "events",
     foreignKeys = [ForeignKey(WorkspaceEntity::class, ["id"], ["workspaceId"], onDelete = CASCADE)],
@@ -174,6 +183,7 @@ data class EventEntity(
 
 // ---- User-defined databases ("collections" in code to avoid clashing with the Room database) ----
 
+@Serializable
 @Entity(
     tableName = "collections",
     foreignKeys = [ForeignKey(WorkspaceEntity::class, ["id"], ["workspaceId"], onDelete = CASCADE)],
@@ -195,6 +205,7 @@ enum class PropertyType {
     PERSON, RELATION, FORMULA, CREATED_TIME, LAST_EDITED_TIME,
 }
 
+@Serializable
 @Entity(
     tableName = "properties",
     foreignKeys = [ForeignKey(CollectionEntity::class, ["id"], ["collectionId"], onDelete = CASCADE)],
@@ -210,6 +221,7 @@ data class PropertyEntity(
     val sortIndex: Int,
 )
 
+@Serializable
 @Entity(
     tableName = "records",
     foreignKeys = [ForeignKey(CollectionEntity::class, ["id"], ["collectionId"], onDelete = CASCADE)],
@@ -223,6 +235,7 @@ data class RecordEntity(
     val updatedAt: Long,
 )
 
+@Serializable
 @Entity(
     tableName = "cells",
     primaryKeys = ["recordId", "propertyId"],
@@ -235,6 +248,7 @@ data class RecordEntity(
 data class CellEntity(val recordId: String, val propertyId: String, val value: String)
 
 /** One row per link of a RELATION property; integrity is enforced on both ends. */
+@Serializable
 @Entity(
     tableName = "record_relations",
     primaryKeys = ["fromRecordId", "propertyId", "toRecordId"],
@@ -249,6 +263,7 @@ data class RecordRelationEntity(val fromRecordId: String, val propertyId: String
 
 enum class ViewType { TABLE, BOARD, CALENDAR, GALLERY, LIST }
 
+@Serializable
 @Entity(
     tableName = "collection_views",
     foreignKeys = [ForeignKey(CollectionEntity::class, ["id"], ["collectionId"], onDelete = CASCADE)],
@@ -266,6 +281,7 @@ data class ViewEntity(
 
 enum class AttachmentOwner { PAGE, BLOCK, TASK, RECORD }
 
+@Serializable
 @Entity(
     tableName = "attachments",
     foreignKeys = [ForeignKey(WorkspaceEntity::class, ["id"], ["workspaceId"], onDelete = CASCADE)],

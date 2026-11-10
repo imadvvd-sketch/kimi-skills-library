@@ -67,7 +67,7 @@ class AttachmentRepository(
                 relativePath = relative, createdAt = clock.now(),
             )
             dao.upsert(entity)
-            indexer.put(SearchIndexer.ATTACHMENT, id, workspaceId, ownerId, title = entity.fileName)
+            indexer.putAttachment(entity)
             entity
         }
 

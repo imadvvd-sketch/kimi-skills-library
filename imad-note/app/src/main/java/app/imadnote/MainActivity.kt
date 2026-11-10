@@ -13,6 +13,11 @@ import app.imadnote.ui.shell.ShellViewModel
 import app.imadnote.ui.theme.ImadNoteTheme
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        /** Notification taps pass the owner key, e.g. `task:<id>`. */
+        const val EXTRA_OPEN = "open"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)

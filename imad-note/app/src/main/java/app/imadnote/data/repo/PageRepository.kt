@@ -141,7 +141,7 @@ class PageRepository(
             )
             if (old == null || old.copy(updatedAt = now) != entity) {
                 changed += entity
-                indexer.put(SearchIndexer.BLOCK, block.id, page.workspaceId, page.id, title = "", body = searchableText(block))
+                indexer.put(SearchIndexer.BLOCK, block.id, page.workspaceId, page.id, title = "", body = SearchIndexer.blockText(entity))
             }
         }
         val removed = existing.keys - keep
@@ -154,13 +154,6 @@ class PageRepository(
 
     private suspend fun indexPage(page: PageEntity) =
         indexer.put(SearchIndexer.PAGE, page.id, page.workspaceId, page.id, title = page.title)
-
-    private fun searchableText(block: Block): String = when (block.type) {
-        BlockType.TABLE -> block.props.cells.flatten().joinToString(" ")
-        BlockType.BOOKMARK, BlockType.IMAGE, BlockType.VIDEO, BlockType.AUDIO, BlockType.FILE ->
-            listOfNotNull(block.props.caption, block.props.url).joinToString(" ")
-        else -> block.text
-    }
 
     private fun BlockEntity.toBlock() = Block(
         id = id, type = BlockType.fromKey(type), text = text,

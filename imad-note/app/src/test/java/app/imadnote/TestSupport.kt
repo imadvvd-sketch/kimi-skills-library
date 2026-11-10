@@ -26,7 +26,7 @@ fun testSettings(): SettingsStore {
 }
 
 fun testContainer(db: AppDatabase = AppDatabase.inMemory(testContext()), clock: Clock = FakeClock()) =
-    AppContainer(testContext(), db = db, settings = testSettings(), clock = clock)
+    AppContainer(testContext(), db = db, settings = testSettings(), clock = clock, reminders = FakeReminders())
 
 /** Runs main-thread work and waits for background database work until [condition] holds. */
 fun awaitUntil(timeoutMs: Long = 5_000, condition: () -> Boolean) {
@@ -38,4 +38,10 @@ fun awaitUntil(timeoutMs: Long = 5_000, condition: () -> Boolean) {
         check(System.currentTimeMillis() < deadline) { "Condition not met within ${timeoutMs}ms" }
         Thread.sleep(5)
     }
+}
+
+class FakeReminders : app.imadnote.data.reminders.Reminders {
+    val scheduled = LinkedHashMap<String, Long>()
+    override fun schedule(key: String, at: Long, title: String, body: String) { scheduled[key] = at }
+    override fun cancel(key: String) { scheduled.remove(key) }
 }

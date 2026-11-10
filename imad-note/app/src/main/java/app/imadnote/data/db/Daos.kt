@@ -282,6 +282,27 @@ interface CollectionDao {
     @Query("DELETE FROM collection_views WHERE id = :id")
     suspend fun deleteView(id: String)
 
+    /** Titles of every record in the workspace; used to show relations. */
+    @Query(
+        "SELECT r.id AS recordId, r.collectionId AS collectionId, c.value AS title FROM records r " +
+            "JOIN collections col ON col.id = r.collectionId " +
+            "LEFT JOIN properties p ON p.collectionId = r.collectionId AND p.type = 'TITLE' " +
+            "LEFT JOIN cells c ON c.recordId = r.id AND c.propertyId = p.id WHERE col.workspaceId = :workspaceId"
+    )
+    fun observeRecordTitles(workspaceId: String): Flow<List<RecordTitle>>
+
+    @Query("SELECT * FROM record_relations WHERE propertyId = :propertyId")
+    suspend fun relationsForProperty(propertyId: String): List<RecordRelationEntity>
+
+    @Query("DELETE FROM record_relations WHERE fromRecordId = :recordId AND propertyId = :propertyId")
+    suspend fun clearRelations(recordId: String, propertyId: String)
+
+    @Query("DELETE FROM cells WHERE propertyId = :propertyId")
+    suspend fun clearCells(propertyId: String)
+
+    @Query("SELECT COUNT(*) FROM records WHERE collectionId = :collectionId")
+    fun observeRecordCount(collectionId: String): Flow<Int>
+
     // Whole-table reads/writes for backup and restore.
     @Query("SELECT * FROM collections") suspend fun allCollections(): List<CollectionEntity>
     @Query("SELECT * FROM properties") suspend fun allProperties(): List<PropertyEntity>
@@ -294,6 +315,8 @@ interface CollectionDao {
     @Upsert suspend fun upsertRecords(items: List<RecordEntity>)
     @Upsert suspend fun upsertViews(items: List<ViewEntity>)
 }
+
+data class RecordTitle(val recordId: String, val collectionId: String, val title: String?)
 
 @Dao
 interface AttachmentDao {
