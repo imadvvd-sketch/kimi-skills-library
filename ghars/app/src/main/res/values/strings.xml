@@ -75,4 +75,44 @@
         <item quantity="many">بقيت %d دقيقة</item>
         <item quantity="other">بقيت %d دقيقة</item>
     </plurals>
+    <string name="species_palm">نخلة</string>
+    <string name="species_jasmine">ياسمينة</string>
+    <string name="species_pomegranate">رمّانة</string>
+    <string name="species_fig">تينة</string>
+    <string name="species_sidr">سدرة</string>
+    <string name="species_cedar">أرزة</string>
+    <string name="species_argan">أركانة</string>
+    <string name="grown_palm">نمت نخلتك.</string>
+    <string name="grown_jasmine">نمت ياسمينتك.</string>
+    <string name="grown_pomegranate">نمت رمّانتك.</string>
+    <string name="grown_fig">نمت تينتك.</string>
+    <string name="grown_sidr">نمت سدرتك.</string>
+    <string name="grown_cedar">نمت أرزتك.</string>
+    <string name="grown_argan">نمت أركانتك.</string>
+
+    <plurals name="coins">
+        <item quantity="zero">%d عملة</item>
+        <item quantity="one">عملة واحدة</item>
+        <item quantity="two">عملتان</item>
+        <item quantity="few">%d عملات</item>
+        <item quantity="many">%d عملة</item>
+        <item quantity="other">%d عملة</item>
+    </plurals>
+    <string name="cd_balance">رصيدك: %1$s</string>
+    <string name="cd_coins_earned">كسبت %1$s</string>
+    <string name="store_owned">مملوكة</string>
+    <string name="store_short">ينقصك %1$s.</string>
+    <string name="store_buy_title">شراء %1$s؟</string>
+    <string name="store_buy_body">السعر %1$s.</string>
+    <string name="store_buy_confirm">اشترِ</string>
+    <string name="store_buy_cancel">ليس الآن</string>
+    <string name="cd_species_locked">%1$s، مقفلة. السعر %2$s. افتح المتجر.</string>
+
+    <string name="challenges_intro">تحديات اليوم. تتجدد كل صباح.</string>
+    <string name="challenge_first_session">أكمل جلسة واحدة</string>
+    <string name="challenge_focus_60">ركّز 60 دقيقة</string>
+    <string name="challenge_three_sessions">أكمل 3 جلسات</string>
+    <string name="challenge_progress">%1$d من %2$d</string>
+    <string name="challenge_claim">استلم</string>
+    <string name="challenge_claimed">تم الاستلام</string>
 </resources>

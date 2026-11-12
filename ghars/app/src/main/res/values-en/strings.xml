@@ -63,4 +63,40 @@
         <item quantity="one">%d minute left</item>
         <item quantity="other">%d minutes left</item>
     </plurals>
+    <string name="species_palm">Date palm</string>
+    <string name="species_jasmine">Jasmine</string>
+    <string name="species_pomegranate">Pomegranate</string>
+    <string name="species_fig">Fig</string>
+    <string name="species_sidr">Sidr</string>
+    <string name="species_cedar">Cedar</string>
+    <string name="species_argan">Argan</string>
+    <string name="grown_palm">Your palm has grown.</string>
+    <string name="grown_jasmine">Your jasmine has grown.</string>
+    <string name="grown_pomegranate">Your pomegranate tree has grown.</string>
+    <string name="grown_fig">Your fig tree has grown.</string>
+    <string name="grown_sidr">Your sidr tree has grown.</string>
+    <string name="grown_cedar">Your cedar has grown.</string>
+    <string name="grown_argan">Your argan tree has grown.</string>
+
+    <plurals name="coins">
+        <item quantity="one">%d coin</item>
+        <item quantity="other">%d coins</item>
+    </plurals>
+    <string name="cd_balance">Your balance: %1$s</string>
+    <string name="cd_coins_earned">You earned %1$s</string>
+    <string name="store_owned">Owned</string>
+    <string name="store_short">You need %1$s more.</string>
+    <string name="store_buy_title">Buy %1$s?</string>
+    <string name="store_buy_body">It costs %1$s.</string>
+    <string name="store_buy_confirm">Buy</string>
+    <string name="store_buy_cancel">Not now</string>
+    <string name="cd_species_locked">%1$s, locked. Costs %2$s. Open the store.</string>
+
+    <string name="challenges_intro">Today\'s challenges. New ones every morning.</string>
+    <string name="challenge_first_session">Finish one session</string>
+    <string name="challenge_focus_60">Focus for 60 minutes</string>
+    <string name="challenge_three_sessions">Finish 3 sessions</string>
+    <string name="challenge_progress">%1$d of %2$d</string>
+    <string name="challenge_claim">Claim</string>
+    <string name="challenge_claimed">Claimed</string>
 </resources>

@@ -34,10 +34,8 @@ object AppModule {
     fun database(@ApplicationContext context: Context): GharsDatabase =
         Room.databaseBuilder(context, GharsDatabase::class.java, "ghars.db")
             .addCallback(GharsDatabase.Seed)
+            .addMigrations(GharsDatabase.MIGRATION_1_2)
             .build()
-
-    @Provides fun sessionDao(db: GharsDatabase) = db.sessionDao()
-    @Provides fun speciesDao(db: GharsDatabase) = db.speciesDao()
 
     @Provides @Singleton
     fun dataStore(@ApplicationContext context: Context): DataStore<Preferences> =

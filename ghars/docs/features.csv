@@ -4,9 +4,9 @@ feature,area,priority,original,clone,notes
 ذبول الشجرة عند مغادرة التطبيق,timer,must,yes,yes,Foreground Service + lifecycle؛ مهلة 10 ثوانٍ
 زر الاستسلام مع تأكيد,timer,must,yes,yes,
 الأشجار الميتة تبقى في السجل,forest,must,yes,partial,تُحفظ في القاعدة؛ العرض مع الغابة في المرحلة 3
-شاشة نتيجة نجاح/فشل مع العملات,timer,must,yes,partial,بلا عملات ولا زر مشاركة حتى المرحلة 2
-كسب العملات حسب مدة الجلسة,economy,must,yes,no,معدل خاص بنا
-متجر أنواع الأشجار بالعملات,economy,must,yes,no,
+شاشة نتيجة نجاح/فشل مع العملات,timer,must,yes,yes,العملات تظهر بعدّاد؛ زر المشاركة مؤجّل
+كسب العملات حسب مدة الجلسة,economy,must,yes,yes,عملة لكل دقيقة، +20% من 60 دقيقة
+متجر أنواع الأشجار بالعملات,economy,must,yes,yes,سبعة أنواع من 150 إلى 600
 اختيار نوع الشجرة قبل الزرع,timer,must,yes,yes,
 عرض الغابة يوم/أسبوع/شهر/سنة,forest,must,yes,no,
 خط زمني للجلسات,forest,must,yes,no,
@@ -19,7 +19,7 @@ feature,area,priority,original,clone,notes
 قائمة السماح,blocking,should,yes,no,
 حساب ومزامنة بين الأجهزة,account,should,yes,no,
 العمل دون اتصال مع مزامنة لاحقة,account,should,yes,no,
-تحديات يومية وشهرية,economy,should,yes,no,
+تحديات يومية وشهرية,economy,should,yes,partial,ثلاثة تحديات يومية؛ الشهرية لاحقاً
 إحصاءات متقدمة (أفضل ساعة/يوم، سلسلة),stats,should,yes,no,
 اشتراك مدفوع عبر Google Play Billing,monetization,should,yes,no,
 تذكيرات يومية بالتركيز,notifications,should,unknown,no,

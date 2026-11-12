@@ -17,6 +17,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.pluralStringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.ghars.core.ui.CoinBadge
+import app.ghars.feature.store.WalletViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,8 +39,10 @@ import app.ghars.core.designsystem.GharsTheme
 fun GharsDrawer(
     current: GharsDestination,
     onSelect: (GharsDestination) -> Unit,
+    wallet: WalletViewModel = hiltViewModel(),
 ) {
     val spacing = GharsTheme.spacing
+    val balance by wallet.balance.collectAsStateWithLifecycle()
     ModalDrawerSheet(
         drawerContainerColor = GharsTheme.colors.surface,
         drawerContentColor = GharsTheme.colors.ink,
@@ -57,6 +65,12 @@ fun GharsDrawer(
                 text = stringResource(R.string.tagline),
                 style = GharsTheme.type.label,
                 color = GharsTheme.colors.inkMuted,
+                modifier = Modifier.padding(horizontal = spacing.space3),
+            )
+            Spacer(Modifier.height(spacing.space3))
+            CoinBadge(
+                text = balance.toString(),
+                description = stringResource(R.string.cd_balance, pluralStringResource(R.plurals.coins, balance, balance)),
                 modifier = Modifier.padding(horizontal = spacing.space3),
             )
             Spacer(Modifier.height(spacing.space6))

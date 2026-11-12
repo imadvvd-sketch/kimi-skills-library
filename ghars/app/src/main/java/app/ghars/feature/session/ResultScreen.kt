@@ -3,6 +3,7 @@ package app.ghars.feature.session
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +40,11 @@ import androidx.compose.ui.text.style.TextAlign
 import app.ghars.R
 import app.ghars.core.designsystem.GharsMotion
 import app.ghars.core.designsystem.GharsTheme
+import app.ghars.core.ui.CoinBadge
 import app.ghars.core.ui.GharsButton
+import app.ghars.domain.economy.CoinRules
+import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 import app.ghars.domain.session.SessionRules
 import app.ghars.domain.session.SessionState
 import app.ghars.domain.session.SessionStateMachine
@@ -62,8 +67,12 @@ fun ResultScreen(state: SessionState.Finished, onDone: () -> Unit) {
     val lastStage = SessionStateMachine.stage(SessionStateMachine.progress(state, state.endedAt))
     var revealed by remember { mutableStateOf(false) }
     val glow = remember { Animatable(0f) }
+    val coins = CoinRules.earned(state.session.plannedMinutes, success)
+    // Counts up as the coins arrive; with reduced motion it simply shows the total.
+    val counted = remember { Animatable(if (reduceMotion) coins.toFloat() else 0f) }
     LaunchedEffect(Unit) {
         revealed = true
+        if (coins > 0 && !reduceMotion) launch { counted.animateTo(coins.toFloat(), tween(GharsMotion.GROW_MS * 2)) }
         if (success) {
             // The only glow in the app, and it happens once.
             if (reduceMotion) glow.snapTo(0.5f)
@@ -119,6 +128,13 @@ fun ResultScreen(state: SessionState.Finished, onDone: () -> Unit) {
             textAlign = TextAlign.Center,
             modifier = Modifier.semantics { heading() },
         )
+        if (coins > 0) {
+            Spacer(Modifier.height(spacing.space3))
+            CoinBadge(
+                text = "+${counted.value.roundToInt()}",
+                description = stringResource(R.string.cd_coins_earned, pluralStringResource(R.plurals.coins, coins, coins)),
+            )
+        }
         if (success) {
             Spacer(Modifier.height(spacing.space2))
             Text(

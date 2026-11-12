@@ -4,6 +4,7 @@ import app.ghars.core.designsystem.GharsColors
 import app.ghars.core.designsystem.GharsFocusColors
 import app.ghars.core.designsystem.GharsLightColors
 import androidx.compose.ui.graphics.toArgb
+import app.ghars.domain.economy.SpeciesSeeds
 import java.io.File
 import kotlin.math.cos
 import kotlin.math.sin
@@ -16,7 +17,7 @@ import org.junit.Test
  * The SVG mirrors the geometry in TreeShapes.kt.
  */
 class TreeArtSheetTest {
-    private val ids = listOf("olive", "lemon", "cactus")
+    private val ids = SpeciesSeeds.all.map { it.id }
     private val cell = 200f
 
     private fun GharsColors.css(tone: Tone): String {
@@ -58,10 +59,18 @@ class TreeArtSheetTest {
         val out = StringBuilder()
         var row = 0
         for (colors in listOf(GharsFocusColors, GharsLightColors)) for (id in ids) {
+            assertTrue("$id has no artwork", SpeciesCatalog.find(id) != null)
             val art = SpeciesCatalog.get(id).art
             assertTrue(id, art.stages.all { it.isNotEmpty() } && art.withered.isNotEmpty())
             // Wilting must be recognisable by shape: no leaves, fruit or crown left.
             assertTrue("$id withered", art.withered.none { it is TreeShape.Disc })
+            // Trees must stay inside the frame.
+            assertTrue("$id too tall", art.stages.flatten().all { s ->
+                when (s) {
+                    is TreeShape.Disc -> s.y + s.r <= 0.95f && kotlin.math.abs(s.x) + s.r <= 0.5f
+                    else -> true
+                }
+            })
             val bg = "#%06X".format(colors.bg.toArgb() and 0xFFFFFF)
             out.append("<rect x='0' y='${row * cell}' width='${6 * cell}' height='$cell' fill='$bg'/>\n")
             (art.stages + listOf(art.withered)).forEachIndexed { col, shapes ->

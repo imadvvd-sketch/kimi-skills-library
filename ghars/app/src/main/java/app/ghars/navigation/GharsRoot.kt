@@ -14,6 +14,8 @@ import app.ghars.feature.session.ResultScreen
 import app.ghars.feature.session.SessionScreen
 import app.ghars.feature.session.SessionViewModel
 import app.ghars.feature.species.SpeciesPickerScreen
+import app.ghars.feature.store.StoreScreen
+import app.ghars.feature.challenges.ChallengesScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -41,6 +43,9 @@ import app.ghars.feature.placeholder.PlaceholderScreen
 import kotlinx.coroutines.launch
 
 private const val ROUTE_SPECIES = "species"
+
+/** Destinations with a real screen; the rest still show a placeholder. */
+private val built = setOf(GharsDestination.Home, GharsDestination.Store, GharsDestination.Challenges)
 
 /**
  * Decides what the whole screen shows. A live session or an unseen result always wins over
@@ -124,8 +129,15 @@ private fun BrowsingShell() {
                 composable(GharsDestination.Home.route) {
                     HomeScreen(onChooseSpecies = { navController.navigate(ROUTE_SPECIES) { launchSingleTop = true } })
                 }
-                composable(ROUTE_SPECIES) { SpeciesPickerScreen(onDone = { navController.popBackStack() }) }
-                GharsDestination.entries.filter { it != GharsDestination.Home }.forEach { destination ->
+                composable(ROUTE_SPECIES) {
+                    SpeciesPickerScreen(
+                        onDone = { navController.popBackStack() },
+                        onOpenStore = { navController.navigate(GharsDestination.Store.route) { launchSingleTop = true } },
+                    )
+                }
+                composable(GharsDestination.Store.route) { StoreScreen() }
+                composable(GharsDestination.Challenges.route) { ChallengesScreen() }
+                GharsDestination.entries.filter { it !in built }.forEach { destination ->
                     composable(destination.route) {
                         PlaceholderScreen(
                             message = stringResource(

@@ -48,6 +48,8 @@ data class GharsShadows(
 @Immutable
 data class GharsSizes(
     val icon: Dp = 24.dp,
+    /** Icons that sit inside a line of label text. */
+    val iconSmall: Dp = 16.dp,
     val touchTarget: Dp = 48.dp,
     val hairline: Dp = 1.dp,
     val focusRing: Dp = 2.dp,

@@ -144,13 +144,15 @@ fun SessionScreen(state: SessionState.Active, now: () -> Long, onGiveUp: () -> U
         ConfirmDialog(
             title = stringResource(R.string.give_up_title),
             body = stringResource(R.string.give_up_body),
-            stayLabel = stringResource(R.string.give_up_cancel),
-            confirmLabel = stringResource(R.string.give_up_confirm),
-            onStay = { confirmGiveUp = false },
-            onConfirm = {
+            primaryLabel = stringResource(R.string.give_up_cancel),
+            onPrimary = { confirmGiveUp = false },
+            secondaryLabel = stringResource(R.string.give_up_confirm),
+            onSecondary = {
                 confirmGiveUp = false
                 onGiveUp()
             },
+            onDismiss = { confirmGiveUp = false },
+            secondaryStyle = GharsButtonStyle.Danger,
         )
     }
 }

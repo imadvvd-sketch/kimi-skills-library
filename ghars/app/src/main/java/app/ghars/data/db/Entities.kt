@@ -56,3 +56,18 @@ data class SessionEntity(
     @ColumnInfo(name = "paused_seconds") val pausedSeconds: Int = 0,
     @ColumnInfo(name = "coins_earned") val coinsEarned: Int = 0,
 )
+
+/**
+ * Every change to the coin balance; the balance is the sum of [amount].
+ * [refId] names what caused it (session id, species id, or a challenge claim),
+ * and is unique per reason so nothing is paid or charged twice.
+ */
+@Entity(tableName = "coin_txn", indices = [Index(value = ["reason", "ref_id"], unique = true)])
+data class CoinTxnEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val amount: Int,
+    /** session | purchase | challenge */
+    val reason: String,
+    @ColumnInfo(name = "ref_id") val refId: String,
+    val at: Long,
+)

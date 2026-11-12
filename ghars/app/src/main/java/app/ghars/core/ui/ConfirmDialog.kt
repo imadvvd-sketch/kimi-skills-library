@@ -15,18 +15,23 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.window.Dialog
 import app.ghars.core.designsystem.GharsTheme
 
-/** A calm two-choice dialog. The safe choice comes first and is the prominent one. */
+/**
+ * A calm two-choice dialog. The primary choice comes first and is the prominent one;
+ * dismissing the dialog never does anything irreversible.
+ */
 @Composable
 fun ConfirmDialog(
     title: String,
     body: String,
-    stayLabel: String,
-    confirmLabel: String,
-    onStay: () -> Unit,
-    onConfirm: () -> Unit,
+    primaryLabel: String,
+    onPrimary: () -> Unit,
+    secondaryLabel: String,
+    onSecondary: () -> Unit,
+    onDismiss: () -> Unit,
+    secondaryStyle: GharsButtonStyle = GharsButtonStyle.Secondary,
 ) {
     val spacing = GharsTheme.spacing
-    Dialog(onDismissRequest = onStay) {
+    Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -43,11 +48,11 @@ fun ConfirmDialog(
             Spacer(Modifier.height(spacing.space2))
             Text(text = body, style = GharsTheme.type.body, color = GharsTheme.colors.inkMuted)
             Spacer(Modifier.height(spacing.space6))
-            GharsButton(text = stayLabel, onClick = onStay, modifier = Modifier.fillMaxWidth())
+            GharsButton(text = primaryLabel, onClick = onPrimary, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(spacing.space2))
             GharsButton(
-                text = confirmLabel, onClick = onConfirm,
-                modifier = Modifier.fillMaxWidth(), style = GharsButtonStyle.Danger,
+                text = secondaryLabel, onClick = onSecondary,
+                modifier = Modifier.fillMaxWidth(), style = secondaryStyle,
             )
         }
     }
