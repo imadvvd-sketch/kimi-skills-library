@@ -48,20 +48,20 @@
     <string name="cd_duration">Session length</string>
     <string name="cd_decrease">Five minutes less</string>
     <string name="cd_increase">Five minutes more</string>
-    <string name="cd_tree_stage">%1$s, stage %2$d of %3$d</string>
+    <string name="cd_tree_stage">%1$s, stage %2$s of %3$s</string>
     <string name="cd_tree_withered">Withered tree</string>
 
     <plurals name="duration_minutes">
-        <item quantity="one">%d minute</item>
-        <item quantity="other">%d minutes</item>
+        <item quantity="one">%s minute</item>
+        <item quantity="other">%s minutes</item>
     </plurals>
     <plurals name="minutes_unit">
         <item quantity="one">minute</item>
         <item quantity="other">minutes</item>
     </plurals>
     <plurals name="minutes_left">
-        <item quantity="one">%d minute left</item>
-        <item quantity="other">%d minutes left</item>
+        <item quantity="one">%s minute left</item>
+        <item quantity="other">%s minutes left</item>
     </plurals>
     <string name="species_palm">Date palm</string>
     <string name="species_jasmine">Jasmine</string>
@@ -79,8 +79,8 @@
     <string name="grown_argan">Your argan tree has grown.</string>
 
     <plurals name="coins">
-        <item quantity="one">%d coin</item>
-        <item quantity="other">%d coins</item>
+        <item quantity="one">%s coin</item>
+        <item quantity="other">%s coins</item>
     </plurals>
     <string name="cd_balance">Your balance: %1$s</string>
     <string name="cd_coins_earned">You earned %1$s</string>
@@ -96,7 +96,58 @@
     <string name="challenge_first_session">Finish one session</string>
     <string name="challenge_focus_60">Focus for 60 minutes</string>
     <string name="challenge_three_sessions">Finish 3 sessions</string>
-    <string name="challenge_progress">%1$d of %2$d</string>
+    <string name="challenge_progress">%1$s of %2$s</string>
     <string name="challenge_claim">Claim</string>
     <string name="challenge_claimed">Claimed</string>
+    <string name="tag_study">Study</string>
+    <string name="tag_work">Work</string>
+    <string name="tag_reading">Reading</string>
+    <string name="tag_sport">Sport</string>
+    <string name="tag_none">No tag</string>
+    <string name="tag_new">New tag</string>
+    <string name="tag_edit">Edit tag</string>
+    <string name="tag_name_hint">Tag name</string>
+    <string name="tag_color">Colour</string>
+    <string name="tag_color_option">Colour %1$s of %2$s</string>
+    <string name="tag_save">Save</string>
+    <string name="tag_delete">Delete tag</string>
+    <string name="tag_cancel">Cancel</string>
+    <string name="tag_picker_title">Choose a tag</string>
+    <string name="cd_tag_current">Tag: %1$s. Change it.</string>
+    <string name="tags_empty_custom">Add a tag that fits your day.</string>
+
+    <string name="period_day">Day</string>
+    <string name="period_week">Week</string>
+    <string name="period_month">Month</string>
+    <string name="period_year">Year</string>
+    <string name="cd_period_previous">Previous period</string>
+    <string name="cd_period_next">Next period</string>
+
+    <string name="duration_hm">%1$sh %2$sm</string>
+    <string name="duration_h">%1$sh</string>
+    <string name="duration_m">%1$sm</string>
+    <string name="total_focus">Total focus</string>
+    <string name="count_grown">Grown</string>
+    <string name="count_withered">Withered</string>
+    <string name="cd_forest_tree">%1$s, %2$s</string>
+    <string name="forest_period_empty">No trees in this period.</string>
+
+    <string name="timeline_empty">Nothing planted yet.</string>
+    <string name="status_success">Grown</string>
+    <string name="status_withered">Withered</string>
+    <string name="status_given_up">Stopped</string>
+    <string name="timeline_range">%1$s – %2$s</string>
+
+    <string name="stats_empty">Plant a tree to see your progress here.</string>
+    <string name="stats_streak">Day streak</string>
+    <string name="stats_streak_best">Best: %1$s</string>
+    <string name="stats_by_tag">By tag</string>
+    <string name="stats_by_hour">By hour</string>
+    <string name="stats_by_day">By day</string>
+    <string name="stats_best_hour">Most focused hour: %1$s</string>
+    <string name="stats_best_day">Most focused day: %1$s</string>
+    <plurals name="days">
+        <item quantity="one">%s day</item>
+        <item quantity="other">%s days</item>
+    </plurals>
 </resources>

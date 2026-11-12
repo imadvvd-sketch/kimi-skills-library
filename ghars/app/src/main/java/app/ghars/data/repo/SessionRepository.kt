@@ -5,6 +5,9 @@ import app.ghars.data.db.CoinTxnEntity
 import app.ghars.data.db.GharsDatabase
 import app.ghars.data.db.SessionEntity
 import app.ghars.data.db.SpeciesWithOwnership
+import app.ghars.data.db.TagEntity
+import app.ghars.domain.stats.SessionRecord
+import kotlinx.coroutines.flow.map
 import app.ghars.data.db.UserSpeciesEntity
 import app.ghars.domain.economy.ChallengeRules
 import app.ghars.domain.economy.ChallengeState
@@ -32,9 +35,12 @@ class SessionRepository @Inject constructor(private val db: GharsDatabase) : Ses
         val coins = CoinRules.earned(finished.session.plannedMinutes, finished is SessionState.Success)
         // The tree and its coins are written together or not at all.
         db.withTransaction {
+            // The tag may have been deleted while the session was running.
+            val tagId = finished.session.tagId?.takeIf { db.tagDao().count(it) > 0 }
             val sessionId = db.sessionDao().insert(
                 SessionEntity(
                     speciesId = finished.session.speciesId,
+                    tagId = tagId,
                     plannedMinutes = finished.session.plannedMinutes,
                     startedAt = finished.session.startedAtWall,
                     endedAt = endedAtWall,
@@ -51,6 +57,38 @@ class SessionRepository @Inject constructor(private val db: GharsDatabase) : Ses
                 db.coinDao().insert(CoinTxnEntity(amount = coins, reason = CoinReason.SESSION, refId = sessionId.toString(), at = endedAtWall))
             }
         }
+    }
+}
+
+/** Read side of the session record: forest, timeline and statistics. */
+class HistoryRepository @Inject constructor(private val db: GharsDatabase) {
+    private fun SessionEntity.toRecord() = SessionRecord(
+        id = id, speciesId = speciesId, tagId = tagId, plannedMinutes = plannedMinutes,
+        startedAt = startedAt, endedAt = endedAt, success = status == "success",
+    )
+
+    fun observeStartedBetween(from: Long, to: Long): Flow<List<SessionRecord>> =
+        db.sessionDao().observeStartedBetween(from, to).map { rows -> rows.map { it.toRecord() } }
+
+    /** Newest first, with the raw status so the timeline can tell withered from given up. */
+    fun observeRecent(limit: Int): Flow<List<SessionEntity>> = db.sessionDao().observeRecent(limit)
+
+    fun observeSuccessStarts(): Flow<List<Long>> = db.sessionDao().observeSuccessStarts()
+}
+
+class TagRepository @Inject constructor(private val db: GharsDatabase) {
+    fun observeAll(): Flow<List<TagEntity>> = db.tagDao().observeAll()
+
+    suspend fun create(name: String, color: Int): Long =
+        db.tagDao().insert(TagEntity(name = name.trim().take(MAX_NAME), color = color, isBuiltin = false))
+
+    suspend fun update(id: Long, name: String, color: Int) = db.tagDao().update(id, name.trim().take(MAX_NAME), color)
+
+    /** Sessions keep their place in the forest; they just lose the tag. */
+    suspend fun delete(id: Long) = db.tagDao().delete(id)
+
+    companion object {
+        const val MAX_NAME = 20
     }
 }
 

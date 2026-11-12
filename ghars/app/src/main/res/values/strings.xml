@@ -48,16 +48,16 @@
     <string name="cd_duration">مدة الجلسة</string>
     <string name="cd_decrease">أنقص خمس دقائق</string>
     <string name="cd_increase">زد خمس دقائق</string>
-    <string name="cd_tree_stage">%1$s، المرحلة %2$d من %3$d</string>
+    <string name="cd_tree_stage">%1$s، المرحلة %2$s من %3$s</string>
     <string name="cd_tree_withered">شجرة ذابلة</string>
 
     <plurals name="duration_minutes">
-        <item quantity="zero">%d دقيقة</item>
+        <item quantity="zero">%s دقيقة</item>
         <item quantity="one">دقيقة واحدة</item>
         <item quantity="two">دقيقتان</item>
-        <item quantity="few">%d دقائق</item>
-        <item quantity="many">%d دقيقة</item>
-        <item quantity="other">%d دقيقة</item>
+        <item quantity="few">%s دقائق</item>
+        <item quantity="many">%s دقيقة</item>
+        <item quantity="other">%s دقيقة</item>
     </plurals>
     <plurals name="minutes_unit">
         <item quantity="zero">دقيقة</item>
@@ -71,9 +71,9 @@
         <item quantity="zero">انتهى الوقت</item>
         <item quantity="one">بقيت دقيقة واحدة</item>
         <item quantity="two">بقيت دقيقتان</item>
-        <item quantity="few">بقيت %d دقائق</item>
-        <item quantity="many">بقيت %d دقيقة</item>
-        <item quantity="other">بقيت %d دقيقة</item>
+        <item quantity="few">بقيت %s دقائق</item>
+        <item quantity="many">بقيت %s دقيقة</item>
+        <item quantity="other">بقيت %s دقيقة</item>
     </plurals>
     <string name="species_palm">نخلة</string>
     <string name="species_jasmine">ياسمينة</string>
@@ -91,12 +91,12 @@
     <string name="grown_argan">نمت أركانتك.</string>
 
     <plurals name="coins">
-        <item quantity="zero">%d عملة</item>
+        <item quantity="zero">%s عملة</item>
         <item quantity="one">عملة واحدة</item>
         <item quantity="two">عملتان</item>
-        <item quantity="few">%d عملات</item>
-        <item quantity="many">%d عملة</item>
-        <item quantity="other">%d عملة</item>
+        <item quantity="few">%s عملات</item>
+        <item quantity="many">%s عملة</item>
+        <item quantity="other">%s عملة</item>
     </plurals>
     <string name="cd_balance">رصيدك: %1$s</string>
     <string name="cd_coins_earned">كسبت %1$s</string>
@@ -112,7 +112,62 @@
     <string name="challenge_first_session">أكمل جلسة واحدة</string>
     <string name="challenge_focus_60">ركّز 60 دقيقة</string>
     <string name="challenge_three_sessions">أكمل 3 جلسات</string>
-    <string name="challenge_progress">%1$d من %2$d</string>
+    <string name="challenge_progress">%1$s من %2$s</string>
     <string name="challenge_claim">استلم</string>
     <string name="challenge_claimed">تم الاستلام</string>
+    <string name="tag_study">دراسة</string>
+    <string name="tag_work">عمل</string>
+    <string name="tag_reading">قراءة</string>
+    <string name="tag_sport">رياضة</string>
+    <string name="tag_none">بلا وسم</string>
+    <string name="tag_new">وسم جديد</string>
+    <string name="tag_edit">تعديل الوسم</string>
+    <string name="tag_name_hint">اسم الوسم</string>
+    <string name="tag_color">اللون</string>
+    <string name="tag_color_option">اللون %1$s من %2$s</string>
+    <string name="tag_save">احفظ</string>
+    <string name="tag_delete">احذف الوسم</string>
+    <string name="tag_cancel">إلغاء</string>
+    <string name="tag_picker_title">اختر وسماً</string>
+    <string name="cd_tag_current">الوسم: %1$s. غيّره.</string>
+    <string name="tags_empty_custom">أضف وسماً يناسب يومك.</string>
+
+    <string name="period_day">يوم</string>
+    <string name="period_week">أسبوع</string>
+    <string name="period_month">شهر</string>
+    <string name="period_year">سنة</string>
+    <string name="cd_period_previous">الفترة السابقة</string>
+    <string name="cd_period_next">الفترة التالية</string>
+
+    <string name="duration_hm">%1$s س %2$s د</string>
+    <string name="duration_h">%1$s س</string>
+    <string name="duration_m">%1$s د</string>
+    <string name="total_focus">إجمالي التركيز</string>
+    <string name="count_grown">نمت</string>
+    <string name="count_withered">ذبلت</string>
+    <string name="cd_forest_tree">%1$s، %2$s</string>
+    <string name="forest_period_empty">لا أشجار في هذه الفترة.</string>
+
+    <string name="timeline_empty">لم تزرع شيئاً بعد.</string>
+    <string name="status_success">نمت</string>
+    <string name="status_withered">ذبلت</string>
+    <string name="status_given_up">توقفت</string>
+    <string name="timeline_range">%1$s – %2$s</string>
+
+    <string name="stats_empty">ازرع شجرة لترى أثرك هنا.</string>
+    <string name="stats_streak">سلسلة الأيام</string>
+    <string name="stats_streak_best">الأفضل: %1$s</string>
+    <string name="stats_by_tag">حسب الوسم</string>
+    <string name="stats_by_hour">حسب الساعة</string>
+    <string name="stats_by_day">حسب اليوم</string>
+    <string name="stats_best_hour">أكثر ساعة تركيزاً: %1$s</string>
+    <string name="stats_best_day">أكثر يوم تركيزاً: %1$s</string>
+    <plurals name="days">
+        <item quantity="zero">%s يوم</item>
+        <item quantity="one">يوم واحد</item>
+        <item quantity="two">يومان</item>
+        <item quantity="few">%s أيام</item>
+        <item quantity="many">%s يوماً</item>
+        <item quantity="other">%s يوم</item>
+    </plurals>
 </resources>

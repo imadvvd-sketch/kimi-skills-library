@@ -9,6 +9,7 @@ data class SessionInfo(
     val plannedMinutes: Int,
     val startedAt: Long,
     val startedAtWall: Long,
+    val tagId: Long? = null,
 ) {
     val plannedMs: Long get() = plannedMinutes * 60_000L
 }

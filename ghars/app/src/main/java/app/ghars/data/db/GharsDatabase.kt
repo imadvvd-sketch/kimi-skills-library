@@ -27,6 +27,16 @@ interface SessionDao {
     )
     fun observeTotals(from: Long, to: Long): Flow<DayTotalsRow>
 
+    /** Sessions planted in [from, to), oldest first. */
+    @Query("SELECT * FROM session WHERE started_at >= :from AND started_at < :to ORDER BY started_at")
+    fun observeStartedBetween(from: Long, to: Long): Flow<List<SessionEntity>>
+
+    @Query("SELECT * FROM session ORDER BY started_at DESC LIMIT :limit")
+    fun observeRecent(limit: Int): Flow<List<SessionEntity>>
+
+    @Query("SELECT started_at FROM session WHERE status = 'success'")
+    fun observeSuccessStarts(): Flow<List<Long>>
+
     @Query(
         "SELECT COUNT(*) AS sessions, COALESCE(SUM(planned_minutes), 0) AS minutes FROM session " +
             "WHERE status = 'success' AND ended_at >= :from AND ended_at < :to",
@@ -58,6 +68,26 @@ interface SpeciesDao {
 }
 
 @Dao
+interface TagDao {
+    /** Built-in tags first, then custom ones in the order they were made. */
+    @Query("SELECT * FROM tag ORDER BY is_builtin DESC, id")
+    fun observeAll(): Flow<List<TagEntity>>
+
+    @Query("SELECT COUNT(*) FROM tag WHERE id = :id")
+    suspend fun count(id: Long): Int
+
+    @Insert
+    suspend fun insert(tag: TagEntity): Long
+
+    // Built-in tags cannot be changed or removed.
+    @Query("UPDATE tag SET name = :name, color = :color WHERE id = :id AND is_builtin = 0")
+    suspend fun update(id: Long, name: String, color: Int)
+
+    @Query("DELETE FROM tag WHERE id = :id AND is_builtin = 0")
+    suspend fun delete(id: Long)
+}
+
+@Dao
 interface CoinDao {
     @Query("SELECT COALESCE(SUM(amount), 0) FROM coin_txn")
     fun observeBalance(): Flow<Int>
@@ -85,6 +115,7 @@ abstract class GharsDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionDao
     abstract fun speciesDao(): SpeciesDao
     abstract fun coinDao(): CoinDao
+    abstract fun tagDao(): TagDao
 
     /** First-run content: every species (the free ones already owned) and the built-in tags. */
     object Seed : Callback() {

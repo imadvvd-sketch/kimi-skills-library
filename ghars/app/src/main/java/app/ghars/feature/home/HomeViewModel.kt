@@ -2,7 +2,9 @@ package app.ghars.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.ghars.data.db.TagEntity
 import app.ghars.data.prefs.SettingsStore
+import app.ghars.data.repo.TagRepository
 import app.ghars.domain.session.SessionRules
 import app.ghars.session.SessionController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,20 +21,25 @@ data class HomeUiState(
     val minutes: Int = SessionRules.DEFAULT_MINUTES,
     val speciesId: String = SettingsStore.DEFAULT_SPECIES,
     val askedForNotifications: Boolean = false,
+    /** Null when no tag is chosen, or the chosen one was deleted. */
+    val tag: TagEntity? = null,
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val settings: SettingsStore,
     private val controller: SessionController,
+    tags: TagRepository,
 ) : ViewModel() {
 
     // Held in memory so the slider follows the finger; saved in the background.
     private val minutes = MutableStateFlow<Int?>(null)
 
+    private val selectedTag = combine(settings.tagId, tags.observeAll()) { id, all -> all.firstOrNull { it.id == id } }
+
     val ui: StateFlow<HomeUiState> =
-        combine(minutes, settings.minutes, settings.speciesId, settings.askedForNotifications) { local, saved, species, asked ->
-            HomeUiState(local ?: saved, species, asked)
+        combine(minutes, settings.minutes, settings.speciesId, settings.askedForNotifications, selectedTag) { local, saved, species, asked, tag ->
+            HomeUiState(local ?: saved, species, asked, tag)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 
     fun setMinutes(value: Int) {
@@ -49,7 +56,7 @@ class HomeViewModel @Inject constructor(
 
     fun plant() {
         viewModelScope.launch {
-            controller.start(settings.speciesId.first(), minutes.value ?: settings.minutes.first())
+            controller.start(settings.speciesId.first(), minutes.value ?: settings.minutes.first(), ui.value.tag?.id)
         }
     }
 }

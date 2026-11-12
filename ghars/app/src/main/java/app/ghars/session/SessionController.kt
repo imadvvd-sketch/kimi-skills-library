@@ -58,8 +58,8 @@ class SessionController(
         if (restored is SessionState.Active) serviceStarter.start()
     }
 
-    fun start(speciesId: String, minutes: Int) = dispatch(
-        SessionEvent.Start(SessionInfo(speciesId, minutes, clock.elapsedMs(), clock.wallMs())),
+    fun start(speciesId: String, minutes: Int, tagId: Long? = null) = dispatch(
+        SessionEvent.Start(SessionInfo(speciesId, minutes, clock.elapsedMs(), clock.wallMs(), tagId)),
     )
 
     fun pause() = dispatch(SessionEvent.Pause)

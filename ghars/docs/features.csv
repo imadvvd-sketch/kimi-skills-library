@@ -3,24 +3,24 @@ feature,area,priority,original,clone,notes
 شجرة تنمو بمراحل أثناء الجلسة,timer,must,yes,yes,رسومات أصلية؛ زيتونة وليمونة وصبّار
 ذبول الشجرة عند مغادرة التطبيق,timer,must,yes,yes,Foreground Service + lifecycle؛ مهلة 10 ثوانٍ
 زر الاستسلام مع تأكيد,timer,must,yes,yes,
-الأشجار الميتة تبقى في السجل,forest,must,yes,partial,تُحفظ في القاعدة؛ العرض مع الغابة في المرحلة 3
+الأشجار الميتة تبقى في السجل,forest,must,yes,yes,تظهر ذابلة في الغابة والخط الزمني
 شاشة نتيجة نجاح/فشل مع العملات,timer,must,yes,yes,العملات تظهر بعدّاد؛ زر المشاركة مؤجّل
 كسب العملات حسب مدة الجلسة,economy,must,yes,yes,عملة لكل دقيقة، +20% من 60 دقيقة
 متجر أنواع الأشجار بالعملات,economy,must,yes,yes,سبعة أنواع من 150 إلى 600
 اختيار نوع الشجرة قبل الزرع,timer,must,yes,yes,
-عرض الغابة يوم/أسبوع/شهر/سنة,forest,must,yes,no,
-خط زمني للجلسات,forest,must,yes,no,
-وسوم للجلسات (مدمجة),tags,must,yes,no,دراسة/عمل/كتابة
-إحصاءات أساسية حسب الوسم والوقت,stats,must,yes,no,
-واجهة عربية RTL,platform,must,no,partial,ميزتنا الأساسية؛ الهيكل والقائمة RTL، تكتمل مع كل شاشة
-وسوم مخصصة,tags,should,yes,no,Plus في الأصل
+عرض الغابة يوم/أسبوع/شهر/سنة,forest,must,yes,yes,مع التنقل بين الفترات السابقة
+خط زمني للجلسات,forest,must,yes,yes,آخر 300 جلسة مجمّعة بالأيام
+وسوم للجلسات (مدمجة),tags,must,yes,yes,دراسة/عمل/قراءة/رياضة
+إحصاءات أساسية حسب الوسم والوقت,stats,must,yes,yes,أعمدة مسمّاة حسب الوسم والساعة واليوم
+واجهة عربية RTL,platform,must,no,yes,ميزتنا الأساسية؛ كل الشاشات RTL بأرقام 0-9
+وسوم مخصصة,tags,should,yes,yes,اسم ولون؛ مجانية عندنا
 إيقاف مؤقت حتى 5 دقائق,timer,should,yes,partial,المنطق مختبر في آلة الحالات؛ بلا زر في الواجهة
 وضع Deep Focus لحجب التطبيقات,blocking,should,yes,no,سياسة Accessibility في Play
 قائمة السماح,blocking,should,yes,no,
 حساب ومزامنة بين الأجهزة,account,should,yes,no,
 العمل دون اتصال مع مزامنة لاحقة,account,should,yes,no,
 تحديات يومية وشهرية,economy,should,yes,partial,ثلاثة تحديات يومية؛ الشهرية لاحقاً
-إحصاءات متقدمة (أفضل ساعة/يوم، سلسلة),stats,should,yes,no,
+إحصاءات متقدمة (أفضل ساعة/يوم، سلسلة),stats,should,yes,yes,أفضل ساعة ويوم وسلسلة الأيام الحالية والأفضل
 اشتراك مدفوع عبر Google Play Billing,monetization,should,yes,no,
 تذكيرات يومية بالتركيز,notifications,should,unknown,no,
 الزراعة الجماعية بغرف ورمز دعوة,social,could,yes,no,يحتاج Realtime

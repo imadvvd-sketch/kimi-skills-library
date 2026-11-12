@@ -60,3 +60,9 @@ val GharsFocusColors = GharsColors(
     danger = Color(0xFFFF8A7A),
     isFocus = true,
 )
+
+/**
+ * Colours a tag may have: the fixed illustration palette plus the neutral ink.
+ * They mark a tag beside its name; charts never rely on them to tell tags apart.
+ */
+val GharsTagColors: List<Color> = with(GharsLightColors) { listOf(leaf, clay, mint, night, inkMuted) }

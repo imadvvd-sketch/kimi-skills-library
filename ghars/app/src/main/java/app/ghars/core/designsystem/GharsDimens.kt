@@ -59,6 +59,11 @@ data class GharsSizes(
     val ringThumb: Dp = 28.dp,
     val pickerCell: Dp = 144.dp,
     val pickerTree: Dp = 96.dp,
+    val forestCell: Dp = 72.dp,
+    val chart: Dp = 120.dp,
+    /** Rounded data-end of a bar, and the gap between bars. */
+    val barRadius: Dp = 4.dp,
+    val barGap: Dp = 2.dp,
 )
 
 /** Durations and curves from the Motion section of docs/design/README.md. */

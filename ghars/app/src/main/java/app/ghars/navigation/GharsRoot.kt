@@ -15,6 +15,10 @@ import app.ghars.feature.session.SessionScreen
 import app.ghars.feature.session.SessionViewModel
 import app.ghars.feature.species.SpeciesPickerScreen
 import app.ghars.feature.store.StoreScreen
+import app.ghars.feature.forest.ForestScreen
+import app.ghars.feature.timeline.TimelineScreen
+import app.ghars.feature.stats.StatsScreen
+import app.ghars.feature.tags.TagsScreen
 import app.ghars.feature.challenges.ChallengesScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -43,9 +47,10 @@ import app.ghars.feature.placeholder.PlaceholderScreen
 import kotlinx.coroutines.launch
 
 private const val ROUTE_SPECIES = "species"
+private const val ROUTE_TAG_PICKER = "tag_picker"
 
 /** Destinations with a real screen; the rest still show a placeholder. */
-private val built = setOf(GharsDestination.Home, GharsDestination.Store, GharsDestination.Challenges)
+private val built = GharsDestination.entries.toSet() - GharsDestination.Settings
 
 /**
  * Decides what the whole screen shows. A live session or an unseen result always wins over
@@ -85,7 +90,12 @@ private fun BrowsingShell() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val route = backStackEntry?.destination?.route
     val current = GharsDestination.fromRoute(route)
-    val onSpeciesPicker = route == ROUTE_SPECIES
+    // Screens opened from home that are not in the menu, with their titles.
+    val subScreenTitle = when (route) {
+        ROUTE_SPECIES -> R.string.species_picker_title
+        ROUTE_TAG_PICKER -> R.string.tag_picker_title
+        else -> null
+    }
 
     BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
 
@@ -112,9 +122,9 @@ private fun BrowsingShell() {
                 .background(GharsTheme.colors.bg)
                 .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
-            val isHome = current == GharsDestination.Home && !onSpeciesPicker
+            val isHome = current == GharsDestination.Home && subScreenTitle == null
             GharsTopBar(
-                title = stringResource(if (onSpeciesPicker) R.string.species_picker_title else current.title),
+                title = stringResource(subScreenTitle ?: current.title),
                 navIcon = if (isHome) R.drawable.ic_menu else R.drawable.ic_arrow_back,
                 navIconDescription = stringResource(if (isHome) R.string.cd_open_menu else R.string.cd_back),
                 onNavClick = {
@@ -127,7 +137,10 @@ private fun BrowsingShell() {
                 modifier = Modifier.fillMaxSize(),
             ) {
                 composable(GharsDestination.Home.route) {
-                    HomeScreen(onChooseSpecies = { navController.navigate(ROUTE_SPECIES) { launchSingleTop = true } })
+                    HomeScreen(
+                        onChooseSpecies = { navController.navigate(ROUTE_SPECIES) { launchSingleTop = true } },
+                        onChooseTag = { navController.navigate(ROUTE_TAG_PICKER) { launchSingleTop = true } },
+                    )
                 }
                 composable(ROUTE_SPECIES) {
                     SpeciesPickerScreen(
@@ -135,16 +148,16 @@ private fun BrowsingShell() {
                         onOpenStore = { navController.navigate(GharsDestination.Store.route) { launchSingleTop = true } },
                     )
                 }
+                composable(ROUTE_TAG_PICKER) { TagsScreen(onPicked = { navController.popBackStack() }) }
+                composable(GharsDestination.Tags.route) { TagsScreen() }
+                composable(GharsDestination.Forest.route) { ForestScreen() }
+                composable(GharsDestination.Timeline.route) { TimelineScreen() }
+                composable(GharsDestination.Stats.route) { StatsScreen() }
                 composable(GharsDestination.Store.route) { StoreScreen() }
                 composable(GharsDestination.Challenges.route) { ChallengesScreen() }
                 GharsDestination.entries.filter { it !in built }.forEach { destination ->
                     composable(destination.route) {
-                        PlaceholderScreen(
-                            message = stringResource(
-                                if (destination == GharsDestination.Forest) R.string.forest_empty
-                                else R.string.placeholder_body,
-                            ),
-                        )
+                        PlaceholderScreen(message = stringResource(R.string.placeholder_body))
                     }
                 }
             }

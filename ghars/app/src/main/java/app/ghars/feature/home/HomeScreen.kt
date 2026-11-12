@@ -7,7 +7,14 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import app.ghars.feature.history.TagChip
+import app.ghars.feature.history.tagLabel
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,7 +51,7 @@ import app.ghars.feature.tree.TreeView
 
 /** S02: pick a length, see your tree, plant. One tap on the happy path. */
 @Composable
-fun HomeScreen(onChooseSpecies: () -> Unit, viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(onChooseSpecies: () -> Unit, onChooseTag: () -> Unit, viewModel: HomeViewModel = hiltViewModel()) {
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     val spacing = GharsTheme.spacing
     val colors = GharsTheme.colors
@@ -118,7 +125,21 @@ fun HomeScreen(onChooseSpecies: () -> Unit, viewModel: HomeViewModel = hiltViewM
                 Icon(painterResource(R.drawable.ic_plus), stringResource(R.string.cd_increase), tint = colors.ink)
             }
         }
-        Spacer(Modifier.height(spacing.space8))
+        Spacer(Modifier.height(spacing.space3))
+        val tagDescription = stringResource(R.string.cd_tag_current, tagLabel(ui.tag))
+        Box(
+            modifier = Modifier
+                .heightIn(min = GharsTheme.sizes.touchTarget)
+                .clip(GharsTheme.radius.pillShape)
+                .clickable(role = Role.Button, onClick = onChooseTag)
+                .clearAndSetSemantics {
+                    contentDescription = tagDescription
+                    role = Role.Button
+                    onClick { onChooseTag(); true }
+                },
+            contentAlignment = Alignment.Center,
+        ) { TagChip(ui.tag) }
+        Spacer(Modifier.height(spacing.space6))
         GharsButton(
             text = stringResource(R.string.action_plant),
             onClick = onPlant,

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.ghars.domain.session.SessionRules
 import javax.inject.Inject
@@ -19,6 +20,13 @@ class SettingsStore @Inject constructor(private val dataStore: DataStore<Prefere
     val minutes: Flow<Int> = dataStore.data.map { it[MINUTES] ?: SessionRules.DEFAULT_MINUTES }
     val speciesId: Flow<String> = dataStore.data.map { it[SPECIES] ?: DEFAULT_SPECIES }
     val askedForNotifications: Flow<Boolean> = dataStore.data.map { it[ASKED_NOTIFICATIONS] ?: false }
+
+    /** Null means no tag. */
+    val tagId: Flow<Long?> = dataStore.data.map { it[TAG] }
+
+    suspend fun setTagId(value: Long?) {
+        dataStore.edit { if (value == null) it.remove(TAG) else it[TAG] = value }
+    }
 
     suspend fun setMinutes(value: Int) {
         dataStore.edit { it[MINUTES] = SessionRules.snapDuration(value) }
@@ -35,6 +43,7 @@ class SettingsStore @Inject constructor(private val dataStore: DataStore<Prefere
     companion object {
         const val DEFAULT_SPECIES = "olive"
         private val MINUTES = intPreferencesKey("minutes")
+        private val TAG = longPreferencesKey("tag")
         private val SPECIES = stringPreferencesKey("species")
         private val ASKED_NOTIFICATIONS = booleanPreferencesKey("asked_notifications")
     }
