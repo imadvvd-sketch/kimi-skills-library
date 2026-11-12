@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only what the system needs before Compose starts (window background, launcher icon).
+     Values mirror docs/design/tokens.json and are checked by TokensTest. Screens use GharsTheme. -->
+<resources>
+    <color name="ghars_sand">#F6F1E7</color>
+    <color name="ghars_night">#0B1A15</color>
+    <color name="ghars_brand_soft_dark">#173828</color>
+    <color name="ghars_mint">#3DDC97</color>
+    <color name="ghars_coin">#F2B84B</color>
+</resources>

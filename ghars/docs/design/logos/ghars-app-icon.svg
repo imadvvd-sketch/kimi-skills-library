@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="15.6 15.6 76.8 76.8" width="512" height="512">
+  <!-- Vector trace of the supplied PNG logo; the PNG next to this file is the reference. -->
+  <rect x="15.6" y="15.6" width="76.8" height="76.8" rx="18" fill="#0B1A15"/>
+  <path d="M54,30 a24,24 0 1,1 0,48 a24,24 0 1,1 0,-48" fill="none" stroke="#173828" stroke-width="4.2"/>
+  <path d="M54,30 A24,24 0 1 1 33.22,42" fill="none" stroke="#3DDC97" stroke-width="4.2" stroke-linecap="round"/>
+  <path d="M54,69.6 L54,52.35" fill="none" stroke="#3DDC97" stroke-width="3.3" stroke-linecap="round"/>
+  <path d="M40.8,45.6 C47.1,45.6 52.35,49.35 52.35,59.25 C45.6,59.25 40.8,53.85 40.8,45.6 Z" fill="#3DDC97"/>
+  <path d="M54,54 C54,45.6 59.85,39.6 68.4,39.6 C68.4,48.6 62.1,54 54,54 Z" fill="#F2B84B"/>
+</svg>

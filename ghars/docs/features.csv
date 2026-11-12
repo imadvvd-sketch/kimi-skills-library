@@ -1,0 +1,36 @@
+feature,area,priority,original,clone,notes
+مؤقت عد تنازلي بمدة قابلة للاختيار,timer,must,yes,no,منزلق دائري
+شجرة تنمو بمراحل أثناء الجلسة,timer,must,yes,no,رسومات أصلية
+ذبول الشجرة عند مغادرة التطبيق,timer,must,yes,no,Foreground Service + lifecycle
+زر الاستسلام مع تأكيد,timer,must,yes,no,
+الأشجار الميتة تبقى في السجل,forest,must,yes,no,
+شاشة نتيجة نجاح/فشل مع العملات,timer,must,yes,no,
+كسب العملات حسب مدة الجلسة,economy,must,yes,no,معدل خاص بنا
+متجر أنواع الأشجار بالعملات,economy,must,yes,no,
+اختيار نوع الشجرة قبل الزرع,timer,must,yes,no,
+عرض الغابة يوم/أسبوع/شهر/سنة,forest,must,yes,no,
+خط زمني للجلسات,forest,must,yes,no,
+وسوم للجلسات (مدمجة),tags,must,yes,no,دراسة/عمل/كتابة
+إحصاءات أساسية حسب الوسم والوقت,stats,must,yes,no,
+واجهة عربية RTL,platform,must,no,partial,ميزتنا الأساسية؛ الهيكل والقائمة RTL، تكتمل مع كل شاشة
+وسوم مخصصة,tags,should,yes,no,Plus في الأصل
+إيقاف مؤقت حتى 5 دقائق,timer,should,yes,no,قابل للتعطيل
+وضع Deep Focus لحجب التطبيقات,blocking,should,yes,no,سياسة Accessibility في Play
+قائمة السماح,blocking,should,yes,no,
+حساب ومزامنة بين الأجهزة,account,should,yes,no,
+العمل دون اتصال مع مزامنة لاحقة,account,should,yes,no,
+تحديات يومية وشهرية,economy,should,yes,no,
+إحصاءات متقدمة (أفضل ساعة/يوم، سلسلة),stats,should,yes,no,
+اشتراك مدفوع عبر Google Play Billing,monetization,should,yes,no,
+تذكيرات يومية بالتركيز,notifications,should,unknown,no,
+الزراعة الجماعية بغرف ورمز دعوة,social,could,yes,no,يحتاج Realtime
+Time Guard حجب مجدول,blocking,could,yes,no,
+أصوات محيطة قابلة للتركيب,sounds,could,yes,no,أصوات مرخّصة أو أصلية
+المساحة الهادئة (تنفس),sounds,could,yes,no,
+فعاليات موسمية بأنواع حصرية,economy,could,yes,no,رمضان مثلاً
+دعوة صديق بمكافأة عملات,growth,could,yes,no,
+ويدجت للشاشة الرئيسية,platform,could,unknown,no,مطلوب في المراجعات
+زراعة أشجار حقيقية,impact,could,yes,skip,شراكة Trees for the Future وليست ميزة برمجية
+رسومات وأصوات واسم Forest,brand,could,yes,skip,ملك Seekrtech
+قاعدة المستخدمين والأصدقاء,social,could,yes,skip,الشبكة لا تُستنسخ
+إضافات المتصفح,platform,could,yes,skip,منتج منفصل

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">غرس</string>
+    <string name="tagline">ركّز… وازرع ما يبقى.</string>
+
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_forest">الغابة</string>
+    <string name="nav_timeline">الخط الزمني</string>
+    <string name="nav_stats">الإحصاءات</string>
+    <string name="nav_tags">الوسوم</string>
+    <string name="nav_store">المتجر</string>
+    <string name="nav_challenges">التحديات</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <string name="cd_open_menu">افتح القائمة</string>
+    <string name="cd_back">رجوع</string>
+
+    <string name="placeholder_body">هذه الشاشة لم تُزرع بعد.</string>
+    <string name="forest_empty">غابتك تنتظر أول بذرة.</string>
+</resources>
