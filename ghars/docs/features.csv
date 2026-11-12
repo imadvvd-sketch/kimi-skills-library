@@ -1,20 +1,20 @@
 feature,area,priority,original,clone,notes
-مؤقت عد تنازلي بمدة قابلة للاختيار,timer,must,yes,no,منزلق دائري
-شجرة تنمو بمراحل أثناء الجلسة,timer,must,yes,no,رسومات أصلية
-ذبول الشجرة عند مغادرة التطبيق,timer,must,yes,no,Foreground Service + lifecycle
-زر الاستسلام مع تأكيد,timer,must,yes,no,
-الأشجار الميتة تبقى في السجل,forest,must,yes,no,
-شاشة نتيجة نجاح/فشل مع العملات,timer,must,yes,no,
+مؤقت عد تنازلي بمدة قابلة للاختيار,timer,must,yes,yes,منزلق دائري
+شجرة تنمو بمراحل أثناء الجلسة,timer,must,yes,yes,رسومات أصلية؛ زيتونة وليمونة وصبّار
+ذبول الشجرة عند مغادرة التطبيق,timer,must,yes,yes,Foreground Service + lifecycle؛ مهلة 10 ثوانٍ
+زر الاستسلام مع تأكيد,timer,must,yes,yes,
+الأشجار الميتة تبقى في السجل,forest,must,yes,partial,تُحفظ في القاعدة؛ العرض مع الغابة في المرحلة 3
+شاشة نتيجة نجاح/فشل مع العملات,timer,must,yes,partial,بلا عملات ولا زر مشاركة حتى المرحلة 2
 كسب العملات حسب مدة الجلسة,economy,must,yes,no,معدل خاص بنا
 متجر أنواع الأشجار بالعملات,economy,must,yes,no,
-اختيار نوع الشجرة قبل الزرع,timer,must,yes,no,
+اختيار نوع الشجرة قبل الزرع,timer,must,yes,yes,
 عرض الغابة يوم/أسبوع/شهر/سنة,forest,must,yes,no,
 خط زمني للجلسات,forest,must,yes,no,
 وسوم للجلسات (مدمجة),tags,must,yes,no,دراسة/عمل/كتابة
 إحصاءات أساسية حسب الوسم والوقت,stats,must,yes,no,
 واجهة عربية RTL,platform,must,no,partial,ميزتنا الأساسية؛ الهيكل والقائمة RTL، تكتمل مع كل شاشة
 وسوم مخصصة,tags,should,yes,no,Plus في الأصل
-إيقاف مؤقت حتى 5 دقائق,timer,should,yes,no,قابل للتعطيل
+إيقاف مؤقت حتى 5 دقائق,timer,should,yes,partial,المنطق مختبر في آلة الحالات؛ بلا زر في الواجهة
 وضع Deep Focus لحجب التطبيقات,blocking,should,yes,no,سياسة Accessibility في Play
 قائمة السماح,blocking,should,yes,no,
 حساب ومزامنة بين الأجهزة,account,should,yes,no,

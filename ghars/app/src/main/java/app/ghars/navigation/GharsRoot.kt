@@ -1,6 +1,19 @@
 package app.ghars.navigation
 
+import android.graphics.Color
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.ghars.domain.session.SessionState
+import app.ghars.feature.session.ResultScreen
+import app.ghars.feature.session.SessionScreen
+import app.ghars.feature.session.SessionViewModel
+import app.ghars.feature.species.SpeciesPickerScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,14 +40,47 @@ import app.ghars.feature.home.HomeScreen
 import app.ghars.feature.placeholder.PlaceholderScreen
 import kotlinx.coroutines.launch
 
-/** App shell: side menu (S20) around the navigation graph. */
+private const val ROUTE_SPECIES = "species"
+
+/**
+ * Decides what the whole screen shows. A live session or an unseen result always wins over
+ * browsing, so they survive rotation and process death without any back-stack bookkeeping.
+ */
 @Composable
-fun GharsRoot() {
+fun GharsRoot(viewModel: SessionViewModel = hiltViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val dark = state is SessionState.Active || state is SessionState.Finished
+
+    val activity = LocalActivity.current as? ComponentActivity
+    LaunchedEffect(dark) {
+        val bars = if (dark) SystemBarStyle.dark(Color.TRANSPARENT)
+        else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        activity?.enableEdgeToEdge(bars, bars)
+    }
+
+    when (val current = state) {
+        // Still reading the saved session; the window background covers this instant.
+        null -> Unit
+        SessionState.Idle -> BrowsingShell()
+        is SessionState.Active -> GharsTheme(focusMode = true) {
+            SessionScreen(state = current, now = viewModel::now, onGiveUp = viewModel::giveUp)
+        }
+        is SessionState.Finished -> GharsTheme(focusMode = true) {
+            ResultScreen(state = current, onDone = viewModel::acknowledgeResult)
+        }
+    }
+}
+
+/** Side menu (S20) around the navigation graph. */
+@Composable
+private fun BrowsingShell() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val current = GharsDestination.fromRoute(backStackEntry?.destination?.route)
+    val route = backStackEntry?.destination?.route
+    val current = GharsDestination.fromRoute(route)
+    val onSpeciesPicker = route == ROUTE_SPECIES
 
     BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
 
@@ -61,9 +107,9 @@ fun GharsRoot() {
                 .background(GharsTheme.colors.bg)
                 .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
-            val isHome = current == GharsDestination.Home
+            val isHome = current == GharsDestination.Home && !onSpeciesPicker
             GharsTopBar(
-                title = stringResource(current.title),
+                title = stringResource(if (onSpeciesPicker) R.string.species_picker_title else current.title),
                 navIcon = if (isHome) R.drawable.ic_menu else R.drawable.ic_arrow_back,
                 navIconDescription = stringResource(if (isHome) R.string.cd_open_menu else R.string.cd_back),
                 onNavClick = {
@@ -75,7 +121,10 @@ fun GharsRoot() {
                 startDestination = GharsDestination.Home.route,
                 modifier = Modifier.fillMaxSize(),
             ) {
-                composable(GharsDestination.Home.route) { HomeScreen() }
+                composable(GharsDestination.Home.route) {
+                    HomeScreen(onChooseSpecies = { navController.navigate(ROUTE_SPECIES) { launchSingleTop = true } })
+                }
+                composable(ROUTE_SPECIES) { SpeciesPickerScreen(onDone = { navController.popBackStack() }) }
                 GharsDestination.entries.filter { it != GharsDestination.Home }.forEach { destination ->
                     composable(destination.route) {
                         PlaceholderScreen(

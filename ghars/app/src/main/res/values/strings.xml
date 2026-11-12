@@ -17,4 +17,62 @@
 
     <string name="placeholder_body">هذه الشاشة لم تُزرع بعد.</string>
     <string name="forest_empty">غابتك تنتظر أول بذرة.</string>
+    <string name="action_plant">ازرع</string>
+    <string name="action_give_up">استسلم</string>
+    <string name="action_done">تمّ</string>
+
+    <string name="give_up_title">هل تريد التوقف؟</string>
+    <string name="give_up_body">ستذبل الشجرة.</string>
+    <string name="give_up_confirm">توقّف</string>
+    <string name="give_up_cancel">أكمل</string>
+
+    <string name="session_growing">شجرتك تنمو.</string>
+    <string name="session_phrase">شجرتك تنمو. عد إلى عملك.</string>
+    <string name="session_paused">متوقفة مؤقتاً</string>
+    <string name="notification_time_left">الوقت المتبقي</string>
+    <string name="warning_title">عد إلى غرس</string>
+    <string name="warning_body">شجرتك تنتظر.</string>
+    <string name="result_withered">ذبلت هذه، ستنمو غيرها.</string>
+    <string name="channel_session">جلسة التركيز</string>
+    <string name="channel_alerts">تنبيهات الجلسة</string>
+
+    <string name="species_olive">زيتونة</string>
+    <string name="species_lemon">ليمونة</string>
+    <string name="species_cactus">صبّار</string>
+    <string name="grown_olive">نمت زيتونتك.</string>
+    <string name="grown_lemon">نمت ليمونتك.</string>
+    <string name="grown_cactus">نما صبّارك.</string>
+    <string name="species_picker_title">اختر شجرتك</string>
+
+    <string name="cd_choose_species">اختر نوع الشجرة. الحالي: %1$s</string>
+    <string name="cd_duration">مدة الجلسة</string>
+    <string name="cd_decrease">أنقص خمس دقائق</string>
+    <string name="cd_increase">زد خمس دقائق</string>
+    <string name="cd_tree_stage">%1$s، المرحلة %2$d من %3$d</string>
+    <string name="cd_tree_withered">شجرة ذابلة</string>
+
+    <plurals name="duration_minutes">
+        <item quantity="zero">%d دقيقة</item>
+        <item quantity="one">دقيقة واحدة</item>
+        <item quantity="two">دقيقتان</item>
+        <item quantity="few">%d دقائق</item>
+        <item quantity="many">%d دقيقة</item>
+        <item quantity="other">%d دقيقة</item>
+    </plurals>
+    <plurals name="minutes_unit">
+        <item quantity="zero">دقيقة</item>
+        <item quantity="one">دقيقة</item>
+        <item quantity="two">دقيقتان</item>
+        <item quantity="few">دقائق</item>
+        <item quantity="many">دقيقة</item>
+        <item quantity="other">دقيقة</item>
+    </plurals>
+    <plurals name="minutes_left">
+        <item quantity="zero">انتهى الوقت</item>
+        <item quantity="one">بقيت دقيقة واحدة</item>
+        <item quantity="two">بقيت دقيقتان</item>
+        <item quantity="few">بقيت %d دقائق</item>
+        <item quantity="many">بقيت %d دقيقة</item>
+        <item quantity="other">بقيت %d دقيقة</item>
+    </plurals>
 </resources>

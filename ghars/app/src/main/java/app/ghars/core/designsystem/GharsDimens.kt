@@ -1,5 +1,6 @@
 package app.ghars.core.designsystem
 
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
@@ -50,4 +51,21 @@ data class GharsSizes(
     val touchTarget: Dp = 48.dp,
     val hairline: Dp = 1.dp,
     val focusRing: Dp = 2.dp,
+    /** Largest diameter of the timer ring; it shrinks to fit narrow screens. */
+    val ring: Dp = 296.dp,
+    val ringStroke: Dp = 12.dp,
+    val ringThumb: Dp = 28.dp,
+    val pickerCell: Dp = 144.dp,
+    val pickerTree: Dp = 96.dp,
 )
+
+/** Durations and curves from the Motion section of docs/design/README.md. */
+object GharsMotion {
+    const val GROW_MS = 600
+    val GrowEasing = CubicBezierEasing(0.34f, 1.56f, 0.64f, 1f)
+    const val WITHER_MS = 900
+    /** Used for everything when the system asks for reduced motion. */
+    const val FADE_MS = 200
+    const val GLOW_MS = 1800
+    const val SWAY_MS = 2800
+}

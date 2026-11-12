@@ -17,4 +17,50 @@
 
     <string name="placeholder_body">This screen hasn\'t been planted yet.</string>
     <string name="forest_empty">Your forest is waiting for its first seed.</string>
+    <string name="action_plant">Plant</string>
+    <string name="action_give_up">Give up</string>
+    <string name="action_done">Done</string>
+
+    <string name="give_up_title">Stop now?</string>
+    <string name="give_up_body">The tree will wither.</string>
+    <string name="give_up_confirm">Stop</string>
+    <string name="give_up_cancel">Keep going</string>
+
+    <string name="session_growing">Your tree is growing.</string>
+    <string name="session_phrase">Your tree is growing. Back to your work.</string>
+    <string name="session_paused">Paused</string>
+    <string name="notification_time_left">Time left</string>
+    <string name="warning_title">Come back to Ghars</string>
+    <string name="warning_body">Your tree is waiting.</string>
+    <string name="result_withered">This one withered. Another will grow.</string>
+    <string name="channel_session">Focus session</string>
+    <string name="channel_alerts">Session alerts</string>
+
+    <string name="species_olive">Olive</string>
+    <string name="species_lemon">Lemon</string>
+    <string name="species_cactus">Cactus</string>
+    <string name="grown_olive">Your olive tree has grown.</string>
+    <string name="grown_lemon">Your lemon tree has grown.</string>
+    <string name="grown_cactus">Your cactus has grown.</string>
+    <string name="species_picker_title">Choose your tree</string>
+
+    <string name="cd_choose_species">Choose a tree. Current: %1$s</string>
+    <string name="cd_duration">Session length</string>
+    <string name="cd_decrease">Five minutes less</string>
+    <string name="cd_increase">Five minutes more</string>
+    <string name="cd_tree_stage">%1$s, stage %2$d of %3$d</string>
+    <string name="cd_tree_withered">Withered tree</string>
+
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <plurals name="minutes_unit">
+        <item quantity="one">minute</item>
+        <item quantity="other">minutes</item>
+    </plurals>
+    <plurals name="minutes_left">
+        <item quantity="one">%d minute left</item>
+        <item quantity="other">%d minutes left</item>
+    </plurals>
 </resources>
