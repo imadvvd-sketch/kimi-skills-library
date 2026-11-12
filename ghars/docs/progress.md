@@ -32,7 +32,7 @@ export ANDROID_HOME=/path/to/android-sdk   # يحتاج platforms;android-37.0
 ./gradlew :app:testDebugUnitTest :app:assembleDebug
 ```
 
-## المرحلة 1: الحلقة الأساسية — الكود مكتمل، بانتظار التجربة على جهاز (2026-11-12)
+## المرحلة 1: الحلقة الأساسية — مكتملة، جُرّبت على جهاز ووافق عليها صاحب المنتج (2026-11-12)
 
 ### ما أُنجز
 - **آلة الحالات** `domain/session/SessionStateMachine.kt`: دالة خالصة بلا أندرويد. الحالات: Idle، Running، Paused، Success، Withered، GivenUp. كل المواعيد أوقات مطلقة، فالنتيجة واحدة سواء وصلت النبضات كل ثانية أو بعد موت العملية بساعة.
