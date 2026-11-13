@@ -1,3 +1,4 @@
 
 # Local plugin runtime state
 .claude-flow/
+.swarm/
